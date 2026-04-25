@@ -1,7 +1,5 @@
 # 🚀 Cannon Shooter - Tactical Precision
 
-A high-performance, aerospace-inspired 2D arcade shooter built with vanilla JavaScript and HTML5 Canvas.
-
 ![Cannon Shooter Gameplay](https://novatitan-dev.github.io/cannon-shooter/home_bg.png)
 
 ## 🎮 Play the Game

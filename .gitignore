@@ -1,0 +1,12 @@
+node_modules/
+android/
+build/
+dist/
+www/
+capacitor.config.json
+*.apk
+*.zip
+*.txt
+*.py
+design.md
+stitch_game_over_data/

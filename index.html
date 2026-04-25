@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>CANNON SHOOTER - Tactical Precision</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "inverse-surface": "#2e3132",
+                  "on-tertiary-container": "#fffbff",
+                  "surface-variant": "#e1e3e4",
+                  "tertiary-fixed-dim": "#ffb695",
+                  "background": "#f8f9fa",
+                  "error-container": "#ffdad6",
+                  "on-surface-variant": "#414754",
+                  "surface-container-highest": "#e1e3e4",
+                  "surface-container-low": "#f3f4f5",
+                  "surface-dim": "#d9dadb",
+                  "primary-fixed": "#d8e2ff",
+                  "primary-fixed-dim": "#adc7ff",
+                  "on-secondary": "#ffffff",
+                  "tertiary": "#9e3d00",
+                  "surface-tint": "#005bc0",
+                  "on-secondary-fixed": "#001f25",
+                  "surface-container": "#edeeef",
+                  "on-primary-fixed": "#001a41",
+                  "surface-container-high": "#e7e8e9",
+                  "outline": "#717786",
+                  "on-primary-container": "#fefcff",
+                  "on-tertiary-fixed-variant": "#7c2e00",
+                  "on-tertiary": "#ffffff",
+                  "on-background": "#191c1d",
+                  "secondary-container": "#75e7fe",
+                  "surface-bright": "#f8f9fa",
+                  "on-surface": "#191c1d",
+                  "error": "#ba1a1a",
+                  "primary": "#0059bb",
+                  "on-primary-fixed-variant": "#004493",
+                  "secondary": "#006877",
+                  "on-secondary-container": "#006776",
+                  "on-tertiary-fixed": "#351000",
+                  "secondary-fixed-dim": "#62d6ed",
+                  "on-secondary-fixed-variant": "#004e5a",
+                  "on-primary": "#ffffff",
+                  "tertiary-fixed": "#ffdbcc",
+                  "tertiary-container": "#c64f00",
+                  "on-error": "#ffffff",
+                  "on-error-container": "#93000a",
+                  "inverse-primary": "#adc7ff",
+                  "outline-variant": "#c1c6d7",
+                  "surface": "#f8f9fa",
+                  "surface-container-lowest": "#ffffff",
+                  "secondary-fixed": "#a4eeff",
+                  "primary-container": "#0070ea",
+                  "inverse-on-surface": "#f0f1f2"
+                },
+                fontFamily: {
+                  "headline": ["Plus Jakarta Sans"],
+                  "body": ["Plus Jakarta Sans"],
+                  "label": ["Plus Jakarta Sans"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              },
+            },
+          }
+    </script>
+    
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #75e7fe 0%, #0059bb 100%);
+        }
+        .glass-hud {
+            background: rgba(248, 249, 250, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .health-gradient {
+            background: linear-gradient(90deg, #ba1a1a 0%, #4ade80 100%);
+        }
+        
+        /* Transition utility */
+        .screen {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+        }
+        .screen:not(.hidden) {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Power-up buff badges */
+        .buff-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: buffPulse 1.2s ease-in-out infinite;
+        }
+        .buff-badge.shield {
+            background: rgba(0, 180, 255, 0.2);
+            border: 2px solid #00ccff;
+            color: #00eeff;
+            box-shadow: 0 0 12px rgba(0,200,255,0.4);
+        }
+        .buff-badge.doublef {
+            background: rgba(255, 160, 0, 0.2);
+            border: 2px solid #ffaa00;
+            color: #ffdd00;
+            box-shadow: 0 0 12px rgba(255,180,0,0.4);
+        }
+        @keyframes buffPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.75; transform: scale(0.97); }
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen overflow-hidden">
+
+    <div id="app" class="relative w-full h-screen">
+        
+        <!-- MAIN MENU -->
+        <section id="main-menu" class="screen w-full h-full flex flex-col items-center justify-center relative">
+            <!-- Header -->
+            <header class="fixed top-0 w-full z-50 px-6 py-4 bg-slate-50/70 backdrop-blur-xl flex justify-between items-center w-full max-w-none">
+                <div class="text-xl font-black tracking-tighter text-blue-700">CANNON SHOOTER</div>
+                <div class="flex items-center gap-6">
+                    <div class="hidden md:flex gap-8 items-center">
+                        <span class="font-bold text-blue-700 uppercase tracking-widest text-sm">Play</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <span id="menu-settings-btn" class="material-symbols-outlined text-slate-500 hover:bg-blue-50 p-2 rounded-full cursor-pointer transition-colors">settings</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Canvas -->
+            <main class="flex flex-col items-center justify-center w-full px-8 z-10">
+                <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <img src="home_bg.png" alt="Home Background" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#0059bb 1px, transparent 0); background-size: 40px 40px;"></div>
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="mb-12 flex flex-col items-center text-center">
+                        <div class="mb-4 inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/10">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span class="text-[10px] font-bold tracking-[0.2em] text-primary uppercase">Tactical HUD Online</span>
+                        </div>
+                        <h1 class="font-headline text-6xl md:text-8xl font-black text-primary tracking-[-0.04em] uppercase leading-none">
+                            CANNON<br/><span class="text-on-background opacity-90">SHOOTER</span>
+                            <span class="block text-xs font-bold tracking-[0.3em] text-primary/40 mt-2">VERSION 2.0</span>
+                        </h1>
+                    </div>
+
+                    <div class="bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] w-full max-w-sm shadow-[0_32px_64px_-16px_rgba(0,89,187,0.08)] flex flex-col gap-4">
+                        <button id="play-btn" class="group relative flex items-center justify-between w-full bg-primary text-on-primary py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:shadow-xl hover:shadow-primary/20 active:translate-y-0.5 transition-all">
+                            <span class="flex items-center gap-3">
+                                <span class="material-symbols-outlined">rocket_launch</span>
+                                PLAY
+                            </span>
+                            <span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">arrow_forward</span>
+                        </button>
+                        <button id="settings-btn" class="group flex items-center justify-between w-full bg-surface-container-high text-on-surface-variant py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:bg-surface-container-highest active:translate-y-0.5 transition-all">
+                            <span class="flex items-center gap-3">
+                                <span class="material-symbols-outlined">tune</span>
+                                SETTINGS
+                            </span>
+                        </button>
+                        <button id="exit-btn" class="flex items-center justify-between w-full border border-outline-variant/30 text-on-surface-variant/70 py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:bg-error/5 hover:text-error hover:border-error/20 active:translate-y-0.5 transition-all">
+                            <span class="flex items-center gap-3">
+                                <span class="material-symbols-outlined">logout</span>
+                                EXIT
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <!-- GAME HUD -->
+        <section id="game-hud" class="screen hidden w-full h-full flex flex-col items-center justify-center relative selection:bg-primary/20">
+            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-400">CANNON SHOOTER</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="pause-btn" class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors p-2 rounded-lg cursor-pointer">pause</button>
+                    <button id="hud-settings-btn" class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors p-2 rounded-lg cursor-pointer">settings</button>
+                </div>
+            </header>
+
+            <main class="relative w-full h-full flex items-center justify-center p-8 overflow-hidden">
+
+
+                <!-- Score Card (Left) -->
+                <div class="absolute top-24 left-8 z-30">
+                    <div class="glass-hud p-4 rounded-xl shadow-[24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px]">
+                        <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1">SCORE</p>
+                        <h1 id="score-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">000,000</h1>
+                    </div>
+                </div>
+
+
+
+
+
+
+                <!-- Game Background Layer -->
+                <div id="game-bg-layer" class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <img src="game_bg.png?v=2" class="w-full h-full object-cover" alt="Game Background">
+                </div>
+
+                <!-- Game Canvas -->
+                <div id="game-container" class="absolute inset-0 z-10 bg-transparent">
+                    <canvas id="game-canvas" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Active Buff Badges (bottom-right) -->
+                <div class="absolute bottom-6 right-6 z-30 flex flex-col items-end gap-2 pointer-events-none">
+                    <div id="hud-buff-shield" class="buff-badge shield">
+                        <span style="font-size:14px">🛡️</span>
+                        SHIELD
+                        <span class="buff-timer">14s</span>
+                    </div>
+                    <div id="hud-buff-doublef" class="buff-badge doublef">
+                        <span style="font-size:14px">⚡</span>
+                        DOUBLE FIRE
+                        <span class="buff-timer">12s</span>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+
+        <!-- SETTINGS SCREEN -->
+        <section id="settings-screen" class="screen hidden w-full h-full flex flex-col bg-background relative overflow-y-auto">
+            <header class="bg-slate-50/70 backdrop-blur-xl fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button id="settings-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 transition-colors">
+                        <span class="material-symbols-outlined text-primary">arrow_back</span>
+                    </button>
+                    <span class="text-xl font-black tracking-tighter text-blue-700">SETTINGS</span>
+                </div>
+            </header>
+
+            <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-6">
+                <div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,89,187,0.04)] border border-white/50 w-full max-w-4xl space-y-12">
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">volume_up</span>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-primary">Acoustics</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-xs font-bold uppercase text-on-surface-variant">Master Volume</label>
+                                    <span id="master-volume-label" class="text-xs font-bold text-primary">80%</span>
+                                </div>
+                                <input type="range" id="master-volume" class="w-full h-1.5 bg-surface-container-high rounded-full appearance-none accent-primary" value="80">
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-xs font-bold uppercase text-on-surface-variant">Music (Cannon)</label>
+                                    <span id="music-volume-label" class="text-xs font-bold text-primary">60%</span>
+                                </div>
+                                <input type="range" id="music-volume" class="w-full h-1.5 bg-surface-container-high rounded-full appearance-none accent-primary" value="60">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Settings Section -->
+                    <div class="space-y-6 pt-8 border-t border-outline-variant/20">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">image</span>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-primary">Visuals</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="bg-daylight-btn" class="py-3 px-4 rounded-xl border border-primary text-primary font-bold text-sm bg-primary/10 transition-colors">Daylight View</button>
+                            <button id="bg-dark-btn" class="py-3 px-4 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm hover:bg-surface-container-highest transition-colors">Dark View</button>
+                        </div>
+                    </div>
+
+                    <!-- How to Play Section -->
+                    <div class="space-y-6 pt-8 border-t border-outline-variant/20">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">sports_esports</span>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-primary">How to play?</h3>
+                        </div>
+                        <div class="bg-surface-container-high p-6 rounded-xl border border-white/40">
+                            <p class="text-sm font-medium text-on-surface-variant leading-relaxed">
+                                Double tap and hold on the screen to shoot, then swipe left to right to move the cannon.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-8">
+                        <button id="back-home-btn" class="px-10 py-4 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-xl hover:brightness-110 active:translate-y-1 transition-all">SAVE CONFIG</button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <!-- REVIVE SCREEN -->
+        <section id="revive-screen" class="screen hidden w-full h-full flex flex-col items-center justify-center p-6 relative z-50">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+            <div class="relative z-10 bg-surface-container-low border border-primary/30 p-8 md:p-12 rounded-[2rem] w-full max-w-sm flex flex-col items-center text-center shadow-[0_0_60px_-15px_rgba(0,100,255,0.3)]">
+                <span class="material-symbols-outlined text-5xl text-primary animate-pulse mb-2">favorite</span>
+                <h2 class="text-3xl font-black tracking-tighter text-on-surface mb-2">CRITICAL DAMAGE</h2>
+                <p class="text-sm font-bold text-on-surface-variant uppercase tracking-widest mb-8">System Offline In: <span id="revive-timer" class="text-error text-xl ml-2">5</span></p>
+                
+                <div class="flex flex-col gap-4 w-full">
+                    <button id="watch-ad-btn" class="flex items-center justify-center gap-3 w-full bg-primary text-on-primary py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:shadow-xl hover:shadow-primary/20 active:translate-y-0.5 transition-all">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        WATCH AD TO REVIVE
+                    </button>
+                    <button id="skip-revive-btn" class="flex items-center justify-center w-full border border-outline-variant/30 text-on-surface-variant/70 py-4 px-8 rounded-xl font-bold tracking-widest text-sm hover:bg-surface-container-highest transition-all">
+                        SKIP
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAME OVER SCREEN (Mission Terminated) -->
+        <section id="game-over-screen" class="screen hidden w-full h-full flex items-center justify-center p-6 relative z-50">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
+            
+            <main class="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                <!-- Left Section: Visual Context -->
+                <div class="hidden md:flex md:col-span-5 flex-col gap-6">
+                    <div class="space-y-2">
+                        <span class="text-primary-fixed-dim font-bold tracking-[0.2em] text-xs uppercase">Mission Status</span>
+                        <h1 class="text-5xl font-extrabold tracking-tighter text-white">TERMINATED.</h1>
+                    </div>
+                    <div class="relative w-full aspect-square bg-white/5 rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                        <img class="w-full h-full object-cover mix-blend-overlay opacity-80" alt="Tactical Terminal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiWlXpTLHln-UgaZ-A_vxYspUjpsPovzBJ0gey5qm4dOapG0oA-LJbtzee7sGhGOCdtDKO1olucWNvtA3OZP2hm5-TIyqBW5WolutyuBD41f9lis_1DpUo-PQZb7BKQpNtrFdYMlB-PowE1pFoVrp85VY9xto0Q_EcY_wgc30AM4EHEZheIUr1wgm-ezUOPUAGaRa8LOEIPVMYlPH8GrJ9Bz54ZgZI6PDguWfL-D51y89_Yyc8FZ65StPiOrUtG8FLm-z_Va830GQi"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Central Game Over Card -->
+                <div class="md:col-span-7 flex justify-center">
+                    <div class="bg-surface-container-lowest w-full max-w-md rounded-[2rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)] flex flex-col gap-8 border border-white/50">
+                        <!-- Tactical Header -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <span class="text-[0.6875rem] font-bold text-primary tracking-widest uppercase">Combat Record</span>
+                                <div class="h-1 w-8 bg-primary mt-1"></div>
+                            </div>
+                            <span class="material-symbols-outlined text-error">error</span>
+                        </div>
+
+                        <!-- Final Score Display -->
+                        <div class="py-4">
+                            <p class="text-[0.6875rem] font-bold text-outline tracking-[0.15em] mb-1">FINAL SCORE</p>
+                            <div class="flex items-baseline gap-2">
+                                <span id="final-score-val" class="text-6xl font-black tracking-tighter text-on-surface">45,000</span>
+                                <span class="text-primary font-bold">PTS</span>
+                            </div>
+                        </div>
+
+                        <!-- Bento-style Statistics Grid -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-surface-container-low p-4 rounded-xl border border-white/40">
+                                <p class="text-[0.625rem] font-bold text-outline tracking-wider uppercase mb-1">Accuracy</p>
+                                <p id="accuracy-val" class="text-xl font-bold text-on-surface">0%</p>
+                            </div>
+                            <div class="bg-surface-container-low p-4 rounded-xl border border-white/40">
+                                <p class="text-[0.625rem] font-bold text-outline tracking-wider uppercase mb-1">Time Elapsed</p>
+                                <p id="time-val" class="text-xl font-bold text-on-surface">0:00</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons Cluster -->
+                        <div class="flex flex-col gap-3 pt-4">
+                            <button id="retry-btn" class="group relative bg-primary text-on-primary py-5 px-8 rounded-xl font-bold flex items-center justify-center gap-3 transition-all duration-150 active:translate-y-0.5 hover:shadow-xl hover:shadow-primary/30">
+                                <span class="material-symbols-outlined text-xl">refresh</span>
+                                <span class="tracking-widest text-xs uppercase">Retry Mission</span>
+                            </button>
+                            <button id="main-menu-btn" class="bg-transparent border-2 border-surface-container-high text-on-surface-variant py-5 px-8 rounded-xl font-bold flex items-center justify-center gap-3 transition-all duration-150 hover:bg-surface-container-low active:scale-95">
+                                <span class="material-symbols-outlined text-xl">home</span>
+                                <span class="tracking-widest text-xs uppercase">Main Menu</span>
+                            </button>
+                        </div>
+
+                        <!-- Instrumentation Footer -->
+                        <div class="flex justify-between items-center text-[0.625rem] font-medium text-outline-variant pt-6 border-t border-surface-container">
+                            <span class="tracking-tight uppercase">Session ID: CS-7729-X</span>
+                            <span class="tracking-tight uppercase">V.4.2.0-ARC</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+    </div>
+
+    <!-- Background Elements -->
+    <div id="bg-overlay" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <script src="ui.js?v=4"></script>
+    <script src="game.js?v=4"></script>
+</body>
+</html>

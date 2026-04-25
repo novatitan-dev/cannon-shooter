@@ -1,0 +1,49 @@
+{
+  "name": "cannon-shooter",
+  "productName": "Canon Shooter",
+  "version": "1.0.0",
+  "description": "Tactical Cannon Shooter Game",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable",
+    "cap:init": "cap init \"Canon Shooter\" com.canonshooter.game",
+    "cap:sync": "cap sync android"
+  },
+  "author": "Antigravity",
+  "license": "ISC",
+  "devDependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "appId": "com.canonshooter.game",
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "files": [
+      "index.html",
+      "style.css",
+      "game.js",
+      "ui.js",
+      "cannon_sprite.png",
+      "game_bg.png",
+      "shoot.mp3",
+      "main.js",
+      "build/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.0.0"
+  }
+}

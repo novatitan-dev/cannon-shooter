@@ -220,8 +220,11 @@ class GameEngine {
         
         // Stats Tracking
         this.totalShots = 0;
-        this.hits = 0;
+        this.hits = 0;           // Number of balls destroyed
+        this.totalHits = 0;      // Number of bullet contacts
         this.startTime = 0;
+        this.gameTimeMs = 0;     // Active gameplay time
+        this.lastUpdate = 0;
         this.difficulty = 1.0;
 
         // Audio
@@ -401,7 +404,11 @@ class GameEngine {
         window.addEventListener('resize', () => this.resize());
         this.resize();
 
-        // Input Handling
+        // Keyboard state tracking
+        this.keysPressed = new Set();
+        this.keyMoveSpeed = 8; // pixels per frame
+
+        // Input Handling — Mouse / Touch
         this.canvas.addEventListener('mousedown', (e) => this.handlePointerDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.handlePointerMove(e));
         window.addEventListener('mouseup', () => this.handlePointerUp());
@@ -415,6 +422,10 @@ class GameEngine {
             this.handlePointerMove(e.touches[0]);
         }, { passive: false });
         window.addEventListener('touchend', () => this.handlePointerUp());
+
+        // Input Handling — Keyboard (A/D, Arrow Keys, F)
+        window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        window.addEventListener('keyup', (e) => this.handleKeyUp(e));
 
         this.loop();
     }
@@ -452,6 +463,49 @@ class GameEngine {
         this.isFiring = false;
     }
 
+    handleKeyDown(e) {
+        const key = e.key.toLowerCase();
+        // Unlock AudioContext on first keyboard interaction too
+        if (!this.audioCtx && (key === 'f' || key === 'a' || key === 'd' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            this.decodeShootAudio();
+        }
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+        if (!this.isRunning) return;
+
+        // Track held keys for movement
+        if (key === 'a' || e.key === 'ArrowLeft') {
+            this.keysPressed.add('left');
+        }
+        if (key === 'd' || e.key === 'ArrowRight') {
+            this.keysPressed.add('right');
+        }
+        // Fire with F key
+        if (key === 'f') {
+            this.isFiring = true;
+        }
+
+        // Prevent default for arrow keys to avoid page scrolling
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+        }
+    }
+
+    handleKeyUp(e) {
+        const key = e.key.toLowerCase();
+        if (key === 'a' || e.key === 'ArrowLeft') {
+            this.keysPressed.delete('left');
+        }
+        if (key === 'd' || e.key === 'ArrowRight') {
+            this.keysPressed.delete('right');
+        }
+        if (key === 'f') {
+            this.isFiring = false;
+        }
+    }
+
     updateCannonTarget(e) {
         if (!e) return;
         const rect = this.canvas.getBoundingClientRect();
@@ -470,7 +524,7 @@ class GameEngine {
     spawnBall() {
         // Progressive spawn rate: starts at 0.997 (very slow) and scales to 0.985 (hard)
         // Hardness increases over 3 minutes (180s)
-        const elapsed = (Date.now() - this.startTime) / 1000;
+        const elapsed = this.gameTimeMs / 1000;
         const progress = Math.min(elapsed / 180, 1);
         
         // Difficulty multiplier 1.0 down to 1.0 (actually we want the threshold to lower)
@@ -516,6 +570,7 @@ class GameEngine {
                 if (distance < ball.size + bullet.radius) {
                     bullet.active = false;
                     ball.health -= 5;
+                    this.totalHits++; // Increment total hits for accuracy tracking
                     if (ball.health <= 0) {
                         this.score += ball.maxHealth;
                         this.hits++;
@@ -617,12 +672,12 @@ class GameEngine {
     }
 
     getStats() {
-        const duration = Math.floor((Date.now() - this.startTime) / 1000);
-        const accuracy = this.totalShots > 0 ? (this.hits / this.totalShots) * 100 : 0;
+        const durationSeconds = Math.floor(this.gameTimeMs / 1000);
+        const accuracy = this.totalShots > 0 ? (this.totalHits / this.totalShots) * 100 : 0;
         return {
             score: this.score,
             accuracy: accuracy.toFixed(1),
-            duration: this.formatTime(duration)
+            duration: this.formatTime(durationSeconds)
         };
     }
 
@@ -637,8 +692,7 @@ class GameEngine {
 
         // Resume game loop
         this.isRunning = true;
-        this.lastTime = performance.now();
-        requestAnimationFrame(this.gameLoop);
+        this.lastUpdate = Date.now(); // Reset update timer to avoid time jump
     }
 
     formatTime(seconds) {
@@ -652,7 +706,10 @@ class GameEngine {
         this.score = 0;
         this.totalShots = 0;
         this.hits = 0;
+        this.totalHits = 0;
         this.startTime = Date.now();
+        this.gameTimeMs = 0;
+        this.lastUpdate = Date.now();
         this.difficulty = 1.0;
         this.balls = [];
         this.bullets = [];
@@ -669,14 +726,27 @@ class GameEngine {
     }
 
     loop() {
+        const now = Date.now();
         if (this.isRunning && !this.isPaused) {
+            if (this.lastUpdate > 0) {
+                this.gameTimeMs += (now - this.lastUpdate);
+            }
             this.update();
             this.draw();
         }
+        this.lastUpdate = now;
         requestAnimationFrame(() => this.loop());
     }
 
     update() {
+        // Keyboard-driven movement (A/D, Arrow Keys)
+        if (this.keysPressed.has('left')) {
+            this.cannon.targetX = Math.max(0, this.cannon.targetX - this.keyMoveSpeed);
+        }
+        if (this.keysPressed.has('right')) {
+            this.cannon.targetX = Math.min(this.canvas.width - this.cannon.width, this.cannon.targetX + this.keyMoveSpeed);
+        }
+
         // Cannon smooth movement with NaN safety
         const dx = (this.cannon.targetX - this.cannon.x) * 0.2;
         if (!isNaN(dx)) {

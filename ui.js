@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mainMenu: document.getElementById('main-menu'),
         gameHUD: document.getElementById('game-hud'),
         settingsScreen: document.getElementById('settings-screen'),
+        howToPlayScreen: document.getElementById('how-to-play-screen'),
         reviveScreen: document.getElementById('revive-screen'),
         gameOverScreen: document.getElementById('game-over-screen')
     };
@@ -19,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttons = {
         play: document.getElementById('play-btn'),
         settings: document.getElementById('settings-btn'),
+        howToPlay: document.getElementById('how-to-play-btn'),
+        howToPlayBack: document.getElementById('how-to-play-back-btn'),
         menuSettings: document.getElementById('menu-settings-btn'),
         exit: document.getElementById('exit-btn'),
         pause: document.getElementById('pause-btn'),
@@ -275,8 +278,28 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    if (buttons.howToPlay) {
+        buttons.howToPlay.onclick = () => {
+            console.log('Event: How to Play Clicked');
+            showScreen(screens.howToPlayScreen);
+        };
+    }
+
+    if (buttons.howToPlayBack) {
+        buttons.howToPlayBack.onclick = () => showScreen(previousScreen);
+    }
+
     if (buttons.menuSettings) {
         buttons.menuSettings.onclick = () => showScreen(screens.settingsScreen);
+    }
+
+    // Bomb power-up button
+    const bombBtn = document.getElementById('hud-buff-bomb');
+    if (bombBtn) {
+        bombBtn.onclick = (e) => {
+            e.stopPropagation(); // Don't trigger cannon movement
+            if (window.Game) window.Game.useBomb();
+        };
     }
 
     if (buttons.hudSettings) {

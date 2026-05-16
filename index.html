@@ -132,6 +132,26 @@
             color: #ffdd00;
             box-shadow: 0 0 12px rgba(255,180,0,0.4);
         }
+        .buff-badge.bomb {
+            background: rgba(255, 50, 50, 0.2);
+            border: 2px solid #ff3333;
+            color: #ff5555;
+            box-shadow: 0 0 12px rgba(255,50,50,0.4);
+            cursor: pointer;
+            pointer-events: auto;
+            animation: buffPulse 1.2s ease-in-out infinite, bombGlow 2s ease-in-out infinite;
+        }
+        .buff-badge.bomb:hover {
+            background: rgba(255, 50, 50, 0.4);
+            transform: scale(1.05);
+        }
+        .buff-badge.bomb:active {
+            transform: scale(0.95);
+        }
+        @keyframes bombGlow {
+            0%, 100% { box-shadow: 0 0 12px rgba(255,50,50,0.4); }
+            50%      { box-shadow: 0 0 24px rgba(255,50,50,0.7); }
+        }
         @keyframes buffPulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50%       { opacity: 0.75; transform: scale(0.97); }
@@ -145,13 +165,10 @@
         <!-- MAIN MENU -->
         <section id="main-menu" class="screen w-full h-full flex flex-col items-center justify-center relative">
             <!-- Header -->
-            <header class="fixed top-0 w-full z-50 px-6 py-4 bg-slate-50/70 backdrop-blur-xl flex justify-between items-center w-full max-w-none">
-                <div class="text-xl font-black tracking-tighter text-blue-700">CANNON SHOOTER</div>
+            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-end items-center max-w-none">
                 <div class="flex items-center gap-6">
-                    <div class="hidden md:flex gap-8 items-center">
-                        <span class="font-bold text-blue-700 uppercase tracking-widest text-sm">Play</span>
-                    </div>
                     <div class="flex gap-4">
+                        <span id="how-to-play-btn" class="material-symbols-outlined text-slate-500 hover:bg-blue-50 p-2 rounded-full cursor-pointer transition-colors">sports_esports</span>
                         <span id="menu-settings-btn" class="material-symbols-outlined text-slate-500 hover:bg-blue-50 p-2 rounded-full cursor-pointer transition-colors">settings</span>
                     </div>
                 </div>
@@ -166,10 +183,6 @@
 
                 <div class="relative z-10 flex flex-col items-center">
                     <div class="mb-12 flex flex-col items-center text-center">
-                        <div class="mb-4 inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/10">
-                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                            <span class="text-[10px] font-bold tracking-[0.2em] text-primary uppercase">Tactical HUD Online</span>
-                        </div>
                         <h1 class="font-headline text-6xl md:text-8xl font-black text-primary tracking-[-0.04em] uppercase leading-none">
                             CANNON<br/><span class="text-on-background opacity-90">SHOOTER</span>
                             <span class="block text-xs font-bold tracking-[0.3em] text-primary/40 mt-2">VERSION 2.0</span>
@@ -251,6 +264,11 @@
                         DOUBLE FIRE
                         <span class="buff-timer">12s</span>
                     </div>
+                    <div id="hud-buff-bomb" class="buff-badge bomb">
+                        <span style="font-size:14px">💣</span>
+                        BOMB
+                        <span style="font-size:9px; opacity:0.7">TAP TO USE</span>
+                    </div>
                 </div>
             </main>
         </section>
@@ -304,21 +322,38 @@
                         </div>
                     </div>
 
-                    <!-- How to Play Section -->
-                    <div class="space-y-6 pt-8 border-t border-outline-variant/20">
+                    <!-- Removed How to Play Section from here -->
+
+                    <div class="flex justify-end pt-8">
+                        <button id="back-home-btn" class="px-10 py-4 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-xl hover:brightness-110 active:translate-y-1 transition-all">SAVE CONFIG</button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <!-- HOW TO PLAY SCREEN -->
+        <section id="how-to-play-screen" class="screen hidden w-full h-full flex flex-col bg-background relative overflow-y-auto">
+            <header class="bg-slate-50/70 backdrop-blur-xl fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button id="how-to-play-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 transition-colors">
+                        <span class="material-symbols-outlined text-primary">arrow_back</span>
+                    </button>
+                    <span class="text-xl font-black tracking-tighter text-blue-700">HOW TO PLAY</span>
+                </div>
+            </header>
+
+            <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-6">
+                <div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,89,187,0.04)] border border-white/50 w-full max-w-4xl space-y-12">
+                    <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary">sports_esports</span>
                             <h3 class="text-sm font-black uppercase tracking-widest text-primary">How to play?</h3>
                         </div>
                         <div class="bg-surface-container-high p-6 rounded-xl border border-white/40">
                             <p class="text-sm font-medium text-on-surface-variant leading-relaxed">
-                                Double tap and hold on the screen to shoot, then swipe left to right to move the cannon.
+                                Double tap and hold on the screen to shoot, then swipe left to right to move the cannon. For laptops, use A/D or Left/Right Arrow keys to move and F to fire.
                             </p>
                         </div>
-                    </div>
-
-                    <div class="flex justify-end pt-8">
-                        <button id="back-home-btn" class="px-10 py-4 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-xl hover:brightness-110 active:translate-y-1 transition-all">SAVE CONFIG</button>
                     </div>
                 </div>
             </main>

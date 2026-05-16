@@ -180,6 +180,51 @@ class DoubleFireDrop {
     }
 }
 
+class BombDrop {
+    constructor(canvas, x) {
+        this.canvas = canvas;
+        this.x = x;
+        this.y = -30;
+        this.radius = 25;
+        this.vy = 2.2;
+        this.active = true;
+        this.isOnGround = false;
+        this.groundTime = 0;
+    }
+
+    update() {
+        if (!this.isOnGround) {
+            this.y += this.vy;
+            if (this.y + this.radius >= this.canvas.height) {
+                this.y = this.canvas.height - this.radius;
+                this.isOnGround = true;
+                this.groundTime = Date.now();
+            }
+        } else {
+            // Disappear after 5.5 seconds on the ground
+            if (Date.now() - this.groundTime > 5500) {
+                this.active = false;
+            }
+        }
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 50, 50, 0.4)';
+        ctx.fill();
+        ctx.strokeStyle = '#ff3333';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `${this.radius * 0.8}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText('💣', this.x, this.y + (this.radius * 0.3));
+    }
+}
+
 class GameEngine {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
@@ -217,6 +262,13 @@ class GameEngine {
         this.doubleFireInterval = 110000; 
         this.cannon.isDoubleFire = false;
         this.cannon.doubleFireEndTime = 0;
+        
+        // Bomb System
+        this.bombDrops = [];
+        this.lastBombTime = Date.now() + 40000; // Offset initial drop
+        this.bombInterval = 120000; // ~2 mins
+        this.hasBomb = false; // Whether player has a bomb ready to use
+        this.bombExplosionParticles = []; // Visual explosion effect
         
         // Stats Tracking
         this.totalShots = 0;
@@ -649,11 +701,26 @@ class GameEngine {
             }
         }
 
+        // Cannon vs BombDrop
+        for (let bomb of this.bombDrops) {
+            const cx = this.cannon.x + this.cannon.width / 2;
+            const cy = this.cannon.y + this.cannon.height / 2;
+            const dx = cx - bomb.x;
+            const dy = cy - bomb.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < bomb.radius + this.cannon.width / 2) {
+                bomb.active = false;
+                this.hasBomb = true;
+            }
+        }
+
         // Cleanup
         this.bullets = this.bullets.filter(b => b.active);
         this.balls = this.balls.filter(b => b.active);
         this.shieldDrops = this.shieldDrops.filter(s => s.active);
         this.doubleFireDrops = this.doubleFireDrops.filter(d => d.active);
+        this.bombDrops = this.bombDrops.filter(b => b.active);
     }
 
     gameOver() {
@@ -695,6 +762,84 @@ class GameEngine {
         this.lastUpdate = Date.now(); // Reset update timer to avoid time jump
     }
 
+    /** Use the bomb power-up: destroy all balls on screen with a big explosion. */
+    useBomb() {
+        if (!this.hasBomb || !this.isRunning) return;
+        this.hasBomb = false;
+
+        // Create explosion particles at each ball's position
+        for (const ball of this.balls) {
+            for (let i = 0; i < 8; i++) {
+                this.bombExplosionParticles.push({
+                    x: ball.x,
+                    y: ball.y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    radius: Math.random() * 6 + 3,
+                    life: 1.0,
+                    color: `hsl(${Math.random() * 60}, 100%, 50%)` // red-orange-yellow
+                });
+            }
+            this.score += ball.maxHealth;
+            this.hits++;
+        }
+        this.balls = [];
+        if (window.GodotBridge) window.GodotBridge.updateScore(this.score);
+
+        // Play a big explosion sound
+        this.playBombSound();
+    }
+
+    /** Deep heavy explosion sound for the bomb. */
+    playBombSound() {
+        if (!this.audioCtx) return;
+        try {
+            const ctx = this.getAudioCtx();
+            const now = ctx.currentTime;
+
+            // Sub-bass boom — deeper than destroy sound
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.exponentialRampToValueAtTime(20, now + 0.5);
+
+            const oscGain = ctx.createGain();
+            oscGain.gain.setValueAtTime(1.5 * this.masterVolume, now);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+
+            osc.connect(oscGain);
+            oscGain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.55);
+
+            // Big noise blast
+            const bufferSize = Math.floor(ctx.sampleRate * 0.4);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 1.2);
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const lp = ctx.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.value = 800;
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(1.2 * this.masterVolume, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+            noise.connect(lp);
+            lp.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(now);
+            noise.stop(now + 0.4);
+        } catch (e) {
+            console.warn('Bomb sound error:', e);
+        }
+    }
+
     formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -715,6 +860,9 @@ class GameEngine {
         this.bullets = [];
         this.shieldDrops = [];
         this.doubleFireDrops = [];
+        this.bombDrops = [];
+        this.bombExplosionParticles = [];
+        this.hasBomb = false;
         this.cannon.isShielded = false;
         this.cannon.isDoubleFire = false;
         this.isRunning = true;
@@ -791,10 +939,28 @@ class GameEngine {
             this.cannon.isDoubleFire = false;
         }
 
+        // Bomb Drop Logic
+        if (Date.now() - this.lastBombTime > this.bombInterval) {
+            const bombX = Math.random() * (this.canvas.width - 50) + 25;
+            this.bombDrops.push(new BombDrop(this.canvas, bombX));
+            this.lastBombTime = Date.now();
+            this.bombInterval = Math.floor(Math.random() * 30000) + 90000; // 90 to 120 seconds
+        }
+
+        // Update explosion particles
+        this.bombExplosionParticles = this.bombExplosionParticles.filter(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.03;
+            p.radius *= 0.97;
+            return p.life > 0;
+        });
+
         this.bullets.forEach(b => b.update());
         this.balls.forEach(b => b.update());
         this.shieldDrops.forEach(s => s.update());
         this.doubleFireDrops.forEach(d => d.update());
+        this.bombDrops.forEach(b => b.update());
         
         this.spawnBall();
         this.checkCollisions();
@@ -860,16 +1026,30 @@ class GameEngine {
 
         this.shieldDrops.forEach(s => s.draw(this.ctx));
         this.doubleFireDrops.forEach(d => d.draw(this.ctx));
+        this.bombDrops.forEach(b => b.draw(this.ctx));
         this.bullets.forEach(b => b.draw(this.ctx));
         this.balls.forEach(b => b.draw(this.ctx));
+
+        // Draw bomb explosion particles
+        for (const p of this.bombExplosionParticles) {
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = p.life;
+            this.ctx.fill();
+            this.ctx.closePath();
+        }
+        this.ctx.globalAlpha = 1;
     }
 
     /** Push active power-up state to the HUD element each frame. */
     _syncBuffHUD() {
         const shieldEl = document.getElementById('hud-buff-shield');
         const dfEl     = document.getElementById('hud-buff-doublef');
+        const bombEl   = document.getElementById('hud-buff-bomb');
         if (shieldEl) shieldEl.style.display = this.cannon.isShielded  ? 'flex' : 'none';
         if (dfEl)     dfEl.style.display     = this.cannon.isDoubleFire ? 'flex' : 'none';
+        if (bombEl)   bombEl.style.display   = this.hasBomb ? 'flex' : 'none';
 
         // Timer countdowns
         if (shieldEl && this.cannon.isShielded) {

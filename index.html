@@ -156,6 +156,218 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50%       { opacity: 0.75; transform: scale(0.97); }
         }
+
+        /* Title animations */
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-8px); }
+        }
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(0,89,187,0.0); }
+            50%       { text-shadow: 0 0 40px rgba(0,89,187,0.35), 0 0 80px rgba(0,89,187,0.15); }
+        }
+        @keyframes shooterFade {
+            0%, 100% { opacity: 0.9; letter-spacing: -0.04em; }
+            50%       { opacity: 1;   letter-spacing: -0.02em; }
+        }
+        @keyframes rocketLaunch {
+            0%   { transform: translateY(0)   rotate(0deg);   }
+            20%  { transform: translateY(-6px) rotate(-8deg); }
+            40%  { transform: translateY(0)   rotate(0deg);   }
+            60%  { transform: translateY(-4px) rotate(6deg);  }
+            80%  { transform: translateY(0)   rotate(0deg);   }
+            100% { transform: translateY(0)   rotate(0deg);   }
+        }
+        .title-cannon {
+            display: inline-block;
+            animation: titleFloat 3.5s ease-in-out infinite, titleGlow 3.5s ease-in-out infinite;
+        }
+        .title-shooter {
+            display: inline-block;
+            animation: titleFloat 3.5s ease-in-out infinite 0.5s, shooterFade 3.5s ease-in-out infinite 0.5s;
+        }
+        .icon-rocket {
+            display: inline-block;
+            animation: rocketLaunch 2.4s ease-in-out infinite;
+        }
+
+        /* Profile popup */
+        .profile-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 80px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .profile-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .profile-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 32px 64px -16px rgba(0,89,187,0.15), 0 0 0 1px rgba(0,89,187,0.04);
+            transform: translateY(-20px) scale(0.96);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+        }
+        .profile-overlay.active .profile-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0059bb 0%, #75e7fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 24px -8px rgba(0,89,187,0.3);
+        }
+        .profile-avatar .material-symbols-outlined {
+            font-size: 36px;
+            color: #fff;
+        }
+        .profile-name-input {
+            width: 100%;
+            text-align: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #191c1d;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .profile-name-input:hover {
+            background: rgba(0,89,187,0.04);
+        }
+        .profile-name-input:focus {
+            border-color: #0059bb;
+            background: rgba(0,89,187,0.06);
+        }
+        .google-play-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 0.75rem;
+            border: 1.5px solid #e1e3e4;
+            background: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #414754;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .google-play-btn:hover {
+            border-color: #0059bb;
+            color: #0059bb;
+            box-shadow: 0 4px 16px -4px rgba(0,89,187,0.15);
+        }
+        .google-play-btn:active {
+            transform: translateY(1px);
+        }
+        .google-play-btn svg {
+            flex-shrink: 0;
+        }
+
+        /* How to Play popup */
+        .htp-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 80px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .htp-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .htp-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 32px 64px -16px rgba(0,89,187,0.15), 0 0 0 1px rgba(0,89,187,0.04);
+            transform: translateY(-20px) scale(0.96);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+        }
+        .htp-overlay.active .htp-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* Consent Popup Overlay */
+        .consent-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .consent-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .consent-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 48px 96px -24px rgba(0,89,187,0.25);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+            text-align: center;
+        }
+        .consent-overlay.active .consent-card {
+            transform: scale(1) translateY(0);
+        }
     </style>
 </head>
 <body class="bg-background font-body text-on-background min-h-screen overflow-hidden">
@@ -165,7 +377,10 @@
         <!-- MAIN MENU -->
         <section id="main-menu" class="screen w-full h-full flex flex-col items-center justify-center relative">
             <!-- Header -->
-            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-end items-center max-w-none">
+            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center max-w-none">
+                <div class="flex items-center">
+                    <span id="profile-btn" class="material-symbols-outlined text-slate-500 hover:bg-blue-50 p-2 rounded-full cursor-pointer transition-colors" style="font-size:28px">account_circle</span>
+                </div>
                 <div class="flex items-center gap-6">
                     <div class="flex gap-4">
                         <span id="how-to-play-btn" class="material-symbols-outlined text-slate-500 hover:bg-blue-50 p-2 rounded-full cursor-pointer transition-colors">sports_esports</span>
@@ -184,34 +399,25 @@
                 <div class="relative z-10 flex flex-col items-center">
                     <div class="mb-12 flex flex-col items-center text-center">
                         <h1 class="font-headline text-6xl md:text-8xl font-black text-primary tracking-[-0.04em] uppercase leading-none">
-                            CANNON<br/><span class="text-on-background opacity-90">SHOOTER</span>
-                            <span class="block text-xs font-bold tracking-[0.3em] text-primary/40 mt-2">VERSION 2.0</span>
+                            <span class="title-cannon">CANNON</span><br/><span class="title-shooter text-on-background opacity-90">SHOOTER</span>
                         </h1>
                     </div>
 
                     <div class="bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] w-full max-w-sm shadow-[0_32px_64px_-16px_rgba(0,89,187,0.08)] flex flex-col gap-4">
                         <button id="play-btn" class="group relative flex items-center justify-between w-full bg-primary text-on-primary py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:shadow-xl hover:shadow-primary/20 active:translate-y-0.5 transition-all">
                             <span class="flex items-center gap-3">
-                                <span class="material-symbols-outlined">rocket_launch</span>
+                                <span class="material-symbols-outlined icon-rocket">rocket_launch</span>
                                 PLAY
                             </span>
                             <span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">arrow_forward</span>
                         </button>
-                        <button id="settings-btn" class="group flex items-center justify-between w-full bg-surface-container-high text-on-surface-variant py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:bg-surface-container-highest active:translate-y-0.5 transition-all">
-                            <span class="flex items-center gap-3">
-                                <span class="material-symbols-outlined">tune</span>
-                                SETTINGS
-                            </span>
-                        </button>
-                        <button id="exit-btn" class="flex items-center justify-between w-full border border-outline-variant/30 text-on-surface-variant/70 py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:bg-error/5 hover:text-error hover:border-error/20 active:translate-y-0.5 transition-all">
-                            <span class="flex items-center gap-3">
-                                <span class="material-symbols-outlined">logout</span>
-                                EXIT
-                            </span>
-                        </button>
+
                     </div>
                 </div>
             </main>
+             <footer class="absolute bottom-4 text-center z-10">
+                 <p class="text-[10px] font-bold tracking-wider text-slate-500 uppercase">&copy; 2026 Cannon Shooter. All Rights Reserved.</p>
+             </footer>
         </section>
 
         <!-- GAME HUD -->
@@ -322,7 +528,19 @@
                         </div>
                     </div>
 
-                    <!-- Removed How to Play Section from here -->
+                    <!-- Privacy Policy Section -->
+                    <div class="space-y-6 pt-8 border-t border-outline-variant/20">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">security</span>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-primary">Legal & Privacy</h3>
+                        </div>
+                        <div>
+                            <a href="privacy-policy.html" class="inline-flex items-center gap-2 py-3 px-6 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm hover:bg-surface-container-highest transition-colors">
+                                <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                View Privacy Policy
+                            </a>
+                        </div>
+                    </div>
 
                     <div class="flex justify-end pt-8">
                         <button id="back-home-btn" class="px-10 py-4 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-xl hover:brightness-110 active:translate-y-1 transition-all">SAVE CONFIG</button>
@@ -331,33 +549,32 @@
             </main>
         </section>
 
-        <!-- HOW TO PLAY SCREEN -->
-        <section id="how-to-play-screen" class="screen hidden w-full h-full flex flex-col bg-background relative overflow-y-auto">
-            <header class="bg-slate-50/70 backdrop-blur-xl fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <button id="how-to-play-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 transition-colors">
-                        <span class="material-symbols-outlined text-primary">arrow_back</span>
-                    </button>
-                    <span class="text-xl font-black tracking-tighter text-blue-700">HOW TO PLAY</span>
+        <!-- HOW TO PLAY POPUP OVERLAY -->
+        <div id="htp-overlay" class="htp-overlay">
+            <div class="htp-card">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
+                    <span class="material-symbols-outlined text-primary" style="font-size:28px">sports_esports</span>
+                    <h3 style="font-size:0.85rem;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#0059bb">How to Play</h3>
                 </div>
-            </header>
-
-            <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-6">
-                <div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,89,187,0.04)] border border-white/50 w-full max-w-4xl space-y-12">
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary">sports_esports</span>
-                            <h3 class="text-sm font-black uppercase tracking-widest text-primary">How to play?</h3>
+                <div style="background:rgba(231,232,233,0.7);padding:1.25rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.4);margin-bottom:1rem">
+                    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:1rem">
+                        <span class="material-symbols-outlined" style="color:#0059bb;font-size:20px;margin-top:2px">phone_android</span>
+                        <div>
+                            <p style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#414754;margin-bottom:0.3rem">Mobile</p>
+                            <p style="font-size:0.82rem;font-weight:500;color:#414754;line-height:1.5">Double tap and hold on the screen to shoot, then swipe left to right to move the cannon.</p>
                         </div>
-                        <div class="bg-surface-container-high p-6 rounded-xl border border-white/40">
-                            <p class="text-sm font-medium text-on-surface-variant leading-relaxed">
-                                Double tap and hold on the screen to shoot, then swipe left to right to move the cannon. For laptops, use A/D or Left/Right Arrow keys to move and F to fire.
-                            </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(0,0,0,0.06);padding-top:1rem;display:flex;align-items:flex-start;gap:10px">
+                        <span class="material-symbols-outlined" style="color:#0059bb;font-size:20px;margin-top:2px">laptop</span>
+                        <div>
+                            <p style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#414754;margin-bottom:0.3rem">Laptop / Desktop</p>
+                            <p style="font-size:0.82rem;font-weight:500;color:#414754;line-height:1.5">Use <strong>A/D</strong> or <strong>←/→</strong> Arrow keys to move and <strong>F</strong> to fire.</p>
                         </div>
                     </div>
                 </div>
-            </main>
-        </section>
+                <button id="htp-close-btn" style="display:block;margin:0.5rem auto 0;padding:0.6rem 2.5rem;border-radius:0.75rem;background:#0059bb;color:#fff;font-size:0.75rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;cursor:pointer;transition:all 0.2s" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">Got it</button>
+            </div>
+        </div>
 
         <!-- REVIVE SCREEN -->
         <section id="revive-screen" class="screen hidden w-full h-full flex flex-col items-center justify-center p-6 relative z-50">
@@ -451,6 +668,41 @@
             </main>
         </section>
 
+        <!-- PROFILE POPUP OVERLAY -->
+        <div id="profile-overlay" class="profile-overlay">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <span class="material-symbols-outlined">person</span>
+                </div>
+                <div style="margin-bottom:1.25rem">
+                    <label style="display:block;text-align:center;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#717786;margin-bottom:0.4rem">Player Name</label>
+                    <input id="profile-name-input" class="profile-name-input" type="text" maxlength="20" spellcheck="false" />
+                    <p style="text-align:center;font-size:0.6rem;color:#a0a5b2;margin-top:0.35rem"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px">edit</span>Tap to edit your name</p>
+                </div>
+                <button id="profile-close-btn" style="display:block;margin:1.25rem auto 0;padding:0.6rem 2rem;border-radius:0.75rem;background:#0059bb;color:#fff;font-size:0.75rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;cursor:pointer;transition:all 0.2s" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">Done</button>
+            </div>
+        </div>
+
+        <!-- FIRST-TIME PRIVACY CONSENT POPUP -->
+        <div id="consent-overlay" class="consent-overlay">
+            <div class="consent-card">
+                <span class="material-symbols-outlined text-primary mb-4" style="font-size: 48px;">security</span>
+                <h2 class="text-2xl font-black text-on-background mb-3">Privacy & Terms</h2>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+                    Welcome to Cannon Shooter! Please read and accept our Privacy Policy to start playing. We collect local game progress and use basic third-party services.
+                </p>
+                <div class="mb-8">
+                    <a href="privacy-policy.html" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+                        <span class="material-symbols-outlined text-xs">open_in_new</span>
+                        Read Privacy Policy
+                    </a>
+                </div>
+                <button id="consent-accept-btn" class="w-full py-4 bg-primary text-white font-bold tracking-widest text-xs uppercase rounded-xl hover:brightness-110 active:translate-y-0.5 transition-all">
+                    I Accept & Continue
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <!-- Background Elements -->
@@ -458,5 +710,65 @@
 
     <script src="ui.js?v=4"></script>
     <script src="game.js?v=4"></script>
+
+    <!-- Profile Popup Logic -->
+    <script>
+    (function() {
+        const adjectives = ['Shadow','Blaze','Cosmic','Neon','Thunder','Iron','Storm','Frost','Cyber','Turbo','Rogue','Nova','Stealth','Phantom','Atomic'];
+        const nouns = ['Cannon','Ace','Striker','Wolf','Hawk','Titan','Viper','Knight','Sniper','Raider','Bolt','Fury','Ghost','Blaster','Reaper'];
+        function randomName() {
+            const a = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const n = nouns[Math.floor(Math.random() * nouns.length)];
+            const num = Math.floor(Math.random() * 900) + 100;
+            return a + n + num;
+        }
+
+        const overlay = document.getElementById('profile-overlay');
+        const nameInput = document.getElementById('profile-name-input');
+        const profileBtn = document.getElementById('profile-btn');
+        const closeBtn = document.getElementById('profile-close-btn');
+
+        // Load saved name or generate new
+        let savedName = localStorage.getItem('cs_player_name');
+        if (!savedName) {
+            savedName = randomName();
+            localStorage.setItem('cs_player_name', savedName);
+        }
+        nameInput.value = savedName;
+
+        // Save on edit
+        nameInput.addEventListener('input', function() {
+            localStorage.setItem('cs_player_name', this.value);
+        });
+
+        // Open popup
+        profileBtn.addEventListener('click', function() {
+            overlay.classList.add('active');
+        });
+
+        // Close popup
+        function closePopup() {
+            overlay.classList.remove('active');
+        }
+        closeBtn.addEventListener('click', closePopup);
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closePopup();
+        });
+
+        // First-Time Privacy Policy Consent Pop-Up Logic
+        const consentOverlay = document.getElementById('consent-overlay');
+        const consentAcceptBtn = document.getElementById('consent-accept-btn');
+
+        const hasAcceptedPrivacy = localStorage.getItem('cs_privacy_accepted') === 'true';
+        if (!hasAcceptedPrivacy) {
+            consentOverlay.classList.add('active');
+        }
+
+        consentAcceptBtn.addEventListener('click', function() {
+            localStorage.setItem('cs_privacy_accepted', 'true');
+            consentOverlay.classList.remove('active');
+        });
+    })();
+    </script>
 </body>
 </html>

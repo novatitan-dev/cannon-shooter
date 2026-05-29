@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mainMenu: document.getElementById('main-menu'),
         gameHUD: document.getElementById('game-hud'),
         settingsScreen: document.getElementById('settings-screen'),
-        howToPlayScreen: document.getElementById('how-to-play-screen'),
+
         reviveScreen: document.getElementById('revive-screen'),
         gameOverScreen: document.getElementById('game-over-screen')
     };
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         play: document.getElementById('play-btn'),
         settings: document.getElementById('settings-btn'),
         howToPlay: document.getElementById('how-to-play-btn'),
-        howToPlayBack: document.getElementById('how-to-play-back-btn'),
+
         menuSettings: document.getElementById('menu-settings-btn'),
         exit: document.getElementById('exit-btn'),
         pause: document.getElementById('pause-btn'),
@@ -281,12 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buttons.howToPlay) {
         buttons.howToPlay.onclick = () => {
             console.log('Event: How to Play Clicked');
-            showScreen(screens.howToPlayScreen);
+            const htpOverlay = document.getElementById('htp-overlay');
+            if (htpOverlay) htpOverlay.classList.add('active');
         };
     }
 
-    if (buttons.howToPlayBack) {
-        buttons.howToPlayBack.onclick = () => showScreen(previousScreen);
+    // How to Play popup close
+    const htpOverlay = document.getElementById('htp-overlay');
+    const htpCloseBtn = document.getElementById('htp-close-btn');
+    if (htpOverlay && htpCloseBtn) {
+        htpCloseBtn.addEventListener('click', () => htpOverlay.classList.remove('active'));
+        htpOverlay.addEventListener('click', (e) => {
+            if (e.target === htpOverlay) htpOverlay.classList.remove('active');
+        });
     }
 
     if (buttons.menuSettings) {

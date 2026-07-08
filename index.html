@@ -420,6 +420,156 @@
              </footer>
         </section>
 
+        <!-- MODE SELECTION -->
+        <section id="mode-selection" class="screen hidden w-full h-full flex flex-col items-center justify-center relative bg-background">
+            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
+                <div class="flex items-center gap-4">
+                    <button id="mode-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
+                        <span class="material-symbols-outlined text-primary">arrow_back</span>
+                    </button>
+                    <span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-400">SELECT GAME MODE</span>
+                </div>
+            </header>
+
+            <main class="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pt-20">
+                <!-- Classic Mode Card -->
+                <div class="bg-surface-container-lowest border border-slate-200/50 dark:border-slate-800 p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[350px]">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-4xl">infinite</span>
+                            <div>
+                                <h3 class="text-2xl font-black tracking-tight text-on-surface">Classic Mode</h3>
+                                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Endurance Wave</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">
+                            Deploy the cannon to defend against endless bouncing waves of increasing frequency. Earn score multipliers, collect shields, bombs, and double-fires. Utilize a single Ad Revive to extend your run.
+                        </p>
+                    </div>
+                    <button id="launch-classic-btn" class="mt-6 w-full bg-primary text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase hover:shadow-lg hover:shadow-primary/20 active:translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                        Launch Classic
+                    </button>
+                </div>
+
+                <!-- Challenge Mode Card -->
+                <div class="bg-surface-container-lowest border border-slate-200/50 dark:border-slate-800 p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[350px]">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-4xl">trophy</span>
+                            <div>
+                                <h3 class="text-2xl font-black tracking-tight text-on-surface">Challenge Mode</h3>
+                                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Precision Operations</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">
+                            Test your tactical capabilities in 4 custom-crafted operations. Navigate time limits, powerless survival parameters, high intensity waves, and face the giant multi-splitting Titan Ball.
+                        </p>
+                    </div>
+                    <button id="select-challenges-btn" class="mt-6 w-full bg-secondary text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase hover:shadow-lg hover:shadow-secondary/20 active:translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">list_alt</span>
+                        Select Mission
+                    </button>
+                </div>
+            </main>
+        </section>
+
+        <!-- CHALLENGE SELECTION -->
+        <section id="challenge-selection" class="screen hidden w-full h-full flex flex-col items-center justify-center relative bg-background overflow-y-auto">
+            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
+                <div class="flex items-center gap-4">
+                    <button id="challenge-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
+                        <span class="material-symbols-outlined text-primary">arrow_back</span>
+                    </button>
+                    <span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-400">CHALLENGE OPERATIONS</span>
+                </div>
+            </header>
+
+            <main class="relative z-10 w-full max-w-5xl px-6 pt-24 pb-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Operation 1: Time Attack -->
+                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: TIME ATTACK</span>
+                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-on-surface">Operation Blitz</h4>
+                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
+                                Clear 30 balls as fast as possible. Efficiency is paramount.
+                            </p>
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
+                                Best Record: <span id="record-time-attack" class="font-bold text-on-surface">--</span>
+                            </div>
+                        </div>
+                        <button id="launch-challenge-time-attack" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
+                            Start Blitz
+                        </button>
+                    </div>
+
+                    <!-- Operation 2: Iron Dome -->
+                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: IRON DOME</span>
+                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-on-surface">Operation Iron Dome</h4>
+                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
+                                Survive 60 seconds against rapid ball spawns. No revives allowed.
+                            </p>
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
+                                Status: <span id="record-iron-dome" class="font-bold text-on-surface">Not Cleared</span>
+                            </div>
+                        </div>
+                        <button id="launch-challenge-iron-dome" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
+                            Start Defense
+                        </button>
+                    </div>
+
+                    <!-- Operation 3: Pure Skill -->
+                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: PURE SKILL</span>
+                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-on-surface">Operation Pure Skill</h4>
+                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
+                                Survive 45 seconds. Power-up drops (Shield, Double Fire, Bomb) are completely offline.
+                            </p>
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
+                                Status: <span id="record-pure-skill" class="font-bold text-on-surface">Not Cleared</span>
+                            </div>
+                        </div>
+                        <button id="launch-challenge-pure-skill" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
+                            Start Operations
+                        </button>
+                    </div>
+
+                    <!-- Operation 4: Titan Brawl -->
+                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: TITAN BRAWL</span>
+                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-on-surface">Operation Titan Brawl</h4>
+                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
+                                Defeat the giant Titan Ball. Splits into smaller and smaller bounce balls.
+                            </p>
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
+                                Best Record: <span id="record-titan-brawl" class="font-bold text-on-surface">--</span>
+                            </div>
+                        </div>
+                        <button id="launch-challenge-titan-brawl" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
+                            Start Brawl
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
         <!-- GAME HUD -->
         <section id="game-hud" class="screen hidden w-full h-full flex flex-col items-center justify-center relative selection:bg-primary/20">
             <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
@@ -440,6 +590,14 @@
                     <div class="glass-hud p-4 rounded-xl shadow-[24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px]">
                         <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1">SCORE</p>
                         <h1 id="score-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">000,000</h1>
+                    </div>
+                </div>
+
+                <!-- Challenge Goal Card (Right) -->
+                <div id="hud-goal-card" class="absolute top-24 right-8 z-30 hidden">
+                    <div class="glass-hud p-4 rounded-xl shadow-[-24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px] border border-blue-500/20">
+                        <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1" id="hud-goal-title">GOAL</p>
+                        <h1 id="hud-goal-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">--</h1>
                     </div>
                 </div>
 
@@ -619,18 +777,18 @@
                         <!-- Tactical Header -->
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
-                                <span class="text-[0.6875rem] font-bold text-primary tracking-widest uppercase">Combat Record</span>
-                                <div class="h-1 w-8 bg-primary mt-1"></div>
+                                <span id="game-over-title" class="text-[0.6875rem] font-bold text-primary tracking-widest uppercase">Combat Record</span>
+                                <div id="game-over-title-bar" class="h-1 w-8 bg-primary mt-1"></div>
                             </div>
-                            <span class="material-symbols-outlined text-error">error</span>
+                            <span id="game-over-icon" class="material-symbols-outlined text-error">error</span>
                         </div>
 
                         <!-- Final Score Display -->
                         <div class="py-4">
-                            <p class="text-[0.6875rem] font-bold text-outline tracking-[0.15em] mb-1">FINAL SCORE</p>
+                            <p id="game-over-score-label" class="text-[0.6875rem] font-bold text-outline tracking-[0.15em] mb-1">FINAL SCORE</p>
                             <div class="flex items-baseline gap-2">
                                 <span id="final-score-val" class="text-6xl font-black tracking-tighter text-on-surface">45,000</span>
-                                <span class="text-primary font-bold">PTS</span>
+                                <span id="game-over-score-unit" class="text-primary font-bold">PTS</span>
                             </div>
                         </div>
 

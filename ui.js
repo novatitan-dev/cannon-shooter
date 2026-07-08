@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Screen Elements
     const screens = {
         mainMenu: document.getElementById('main-menu'),
+        modeSelection: document.getElementById('mode-selection'),
+        challengeSelection: document.getElementById('challenge-selection'),
         gameHUD: document.getElementById('game-hud'),
         settingsScreen: document.getElementById('settings-screen'),
 
@@ -34,7 +36,16 @@ document.addEventListener('DOMContentLoaded', () => {
         watchAd: document.getElementById('watch-ad-btn'),
         skipRevive: document.getElementById('skip-revive-btn'),
         bgDaylight: document.getElementById('bg-daylight-btn'),
-        bgDark: document.getElementById('bg-dark-btn')
+        bgDark: document.getElementById('bg-dark-btn'),
+
+        modeBack: document.getElementById('mode-back-btn'),
+        challengeBack: document.getElementById('challenge-back-btn'),
+        launchClassic: document.getElementById('launch-classic-btn'),
+        selectChallenges: document.getElementById('select-challenges-btn'),
+        launchTimeAttack: document.getElementById('launch-challenge-time-attack'),
+        launchIronDome: document.getElementById('launch-challenge-iron-dome'),
+        launchPureSkill: document.getElementById('launch-challenge-pure-skill'),
+        launchTitanBrawl: document.getElementById('launch-challenge-titan-brawl')
     };
 
     // Volume sliders
@@ -119,7 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused: false,
         hasRevived: false,
         adReady: false,
-        adMobInstance: null
+        adMobInstance: null,
+        lastMode: 'classic',
+        lastChallengeId: null
     };
 
     // --- ADMOB INITIALIZATION ---
@@ -210,13 +223,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (buttons.play) {
         buttons.play.onclick = () => {
-            console.log('Event: Play Clicked');
-            resetGameState();
-            showScreen(screens.gameHUD);
-            setTimeout(() => {
-                if (window.GodotBridge) window.GodotBridge.startGame();
-            }, 200);
+            console.log('Event: Play Clicked -> Show Mode Selection');
+            showScreen(screens.modeSelection);
         };
+    }
+
+    if (buttons.modeBack) {
+        buttons.modeBack.onclick = () => {
+            showScreen(screens.mainMenu);
+        };
+    }
+
+    if (buttons.challengeBack) {
+        buttons.challengeBack.onclick = () => {
+            showScreen(screens.modeSelection);
+        };
+    }
+
+    function launchClassicGame() {
+        resetGameState('classic');
+        showScreen(screens.gameHUD);
+        setTimeout(() => {
+            if (window.GodotBridge) window.GodotBridge.startGame('classic');
+        }, 200);
+    }
+
+    if (buttons.launchClassic) {
+        buttons.launchClassic.onclick = () => {
+            console.log('Event: Launch Classic Clicked');
+            launchClassicGame();
+        };
+    }
+
+    function updateChallengeSelectionUI() {
+        const challenges = ['time_attack', 'iron_dome', 'pure_skill', 'titan_brawl'];
+        challenges.forEach(id => {
+            const key = `cs_challenge_${id}`;
+            const record = localStorage.getItem(key);
+            const labelEl = document.getElementById(`record-${id.replace('_', '-')}`);
+            if (labelEl) {
+                if (record) {
+                    if (id === 'time_attack' || id === 'titan_brawl') {
+                        labelEl.textContent = `${record}s (Cleared)`;
+                        labelEl.className = "font-bold text-emerald-500";
+                    } else {
+                        labelEl.textContent = 'Cleared';
+                        labelEl.className = "font-bold text-emerald-500";
+                    }
+                } else {
+                    labelEl.textContent = id === 'time_attack' || id === 'titan_brawl' ? '--' : 'Not Cleared';
+                    labelEl.className = "font-bold text-slate-400 dark:text-slate-500";
+                }
+            }
+        });
+    }
+
+    if (buttons.selectChallenges) {
+        buttons.selectChallenges.onclick = () => {
+            console.log('Event: Select Challenges Clicked');
+            updateChallengeSelectionUI();
+            showScreen(screens.challengeSelection);
+        };
+    }
+
+    function startChallenge(challengeId) {
+        console.log(`Event: Launch Challenge ${challengeId}`);
+        resetGameState('challenge', challengeId);
+        showScreen(screens.gameHUD);
+        setTimeout(() => {
+            if (window.GodotBridge) window.GodotBridge.startGame('challenge', challengeId);
+        }, 200);
+    }
+
+    if (buttons.launchTimeAttack) {
+        buttons.launchTimeAttack.onclick = () => startChallenge('time_attack');
+    }
+    if (buttons.launchIronDome) {
+        buttons.launchIronDome.onclick = () => startChallenge('iron_dome');
+    }
+    if (buttons.launchPureSkill) {
+        buttons.launchPureSkill.onclick = () => startChallenge('pure_skill');
+    }
+    if (buttons.launchTitanBrawl) {
+        buttons.launchTitanBrawl.onclick = () => startChallenge('titan_brawl');
     }
 
     // --- REVIVE LOGIC ---
@@ -341,11 +430,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buttons.retry) {
         buttons.retry.onclick = () => {
             console.log('Event: Retry Clicked');
-            resetGameState();
-            showScreen(screens.gameHUD);
-            setTimeout(() => {
-                if (window.GodotBridge) window.GodotBridge.startGame();
-            }, 200);
+            if (state.lastMode === 'challenge') {
+                startChallenge(state.lastChallengeId);
+            } else {
+                launchClassicGame();
+            }
         };
     }
 
@@ -372,12 +461,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (displays.powerText) displays.powerText.innerText = `${Math.round(state.power)}%`;
     }
 
-    function resetGameState() {
+    function resetGameState(mode = 'classic', challengeId = null) {
         state.score = 0;
         state.power = 0;
         state.health = 100;
         state.isPaused = false;
         state.hasRevived = false;
+        state.lastMode = mode;
+        state.lastChallengeId = challengeId;
         if (buttons.pause) buttons.pause.innerText = 'pause';
         updateHUD();
         // Load a fresh ad for the next run
@@ -385,7 +476,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function endGame(stats = {}) {
-        if (displays.finalScore) displays.finalScore.innerText = stats.score || state.score;
+        const titleEl = document.getElementById('game-over-title');
+        const titleBarEl = document.getElementById('game-over-title-bar');
+        const iconEl = document.getElementById('game-over-icon');
+        const scoreLabelEl = document.getElementById('game-over-score-label');
+        const scoreUnitEl = document.getElementById('game-over-score-unit');
+
+        if (stats.isChallenge) {
+            if (stats.win) {
+                if (titleEl) {
+                    titleEl.innerText = 'Mission Accomplished';
+                    titleEl.className = 'text-[0.6875rem] font-bold text-emerald-500 tracking-widest uppercase';
+                }
+                if (titleBarEl) {
+                    titleBarEl.className = 'h-1 w-8 bg-emerald-500 mt-1';
+                }
+                if (iconEl) {
+                    iconEl.innerText = 'check_circle';
+                    iconEl.className = 'material-symbols-outlined text-emerald-500';
+                }
+            } else {
+                if (titleEl) {
+                    titleEl.innerText = 'Mission Failed';
+                    titleEl.className = 'text-[0.6875rem] font-bold text-red-500 tracking-widest uppercase';
+                }
+                if (titleBarEl) {
+                    titleBarEl.className = 'h-1 w-8 bg-red-500 mt-1';
+                }
+                if (iconEl) {
+                    iconEl.innerText = 'cancel';
+                    iconEl.className = 'material-symbols-outlined text-red-500';
+                }
+            }
+
+            if (stats.challengeId === 'time_attack' || stats.challengeId === 'titan_brawl') {
+                if (scoreLabelEl) scoreLabelEl.innerText = 'COMPLETION TIME';
+                if (displays.finalScore) {
+                    const elapsed = stats.rawTimeMs ? (stats.rawTimeMs / 1000).toFixed(1) : (state.score / 1000).toFixed(1);
+                    displays.finalScore.innerText = elapsed;
+                }
+                if (scoreUnitEl) scoreUnitEl.innerText = 'SEC';
+            } else {
+                if (scoreLabelEl) scoreLabelEl.innerText = 'FINAL SCORE';
+                if (displays.finalScore) displays.finalScore.innerText = stats.score || state.score;
+                if (scoreUnitEl) scoreUnitEl.innerText = 'PTS';
+            }
+        } else {
+            if (titleEl) {
+                titleEl.innerText = 'Combat Record';
+                titleEl.className = 'text-[0.6875rem] font-bold text-primary tracking-widest uppercase';
+            }
+            if (titleBarEl) {
+                titleBarEl.className = 'h-1 w-8 bg-primary mt-1';
+            }
+            if (iconEl) {
+                iconEl.innerText = 'error';
+                iconEl.className = 'material-symbols-outlined text-error';
+            }
+            if (scoreLabelEl) scoreLabelEl.innerText = 'FINAL SCORE';
+            if (displays.finalScore) displays.finalScore.innerText = stats.score || state.score;
+            if (scoreUnitEl) scoreUnitEl.innerText = 'PTS';
+        }
+
         if (displays.accuracy) displays.accuracy.innerText = (stats.accuracy || 0) + '%';
         if (displays.time) displays.time.innerText = stats.duration || '0:00';
         
@@ -395,8 +547,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- GODOT BRIDGE ---
     window.GodotBridge = {
-        startGame: () => {
-            if (window.Game) window.Game.start();
+        startGame: (mode = 'classic', challengeId = null) => {
+            if (window.Game) window.Game.start(mode, challengeId);
         },
         stopGame: () => {
             if (window.Game) window.Game.isRunning = false;

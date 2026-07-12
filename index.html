@@ -191,6 +191,73 @@
             animation: rocketLaunch 2.4s ease-in-out infinite;
         }
 
+        /* Glowing logo styles */
+        .logo-glow-container {
+            position: relative;
+            padding: 1.5rem 2.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 2rem;
+            border: 1px solid rgba(0, 89, 187, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 89, 187, 0.05),
+                        inset 0 0 20px 0 rgba(0, 89, 187, 0.05);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: all 0.5s ease;
+        }
+        .logo-glow-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 2rem;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(117, 231, 254, 0.5), rgba(0, 89, 187, 0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .logo-glow-container:hover {
+            border-color: rgba(117, 231, 254, 0.3);
+            box-shadow: 0 0 35px 5px rgba(117, 231, 254, 0.2),
+                        0 8px 32px 0 rgba(0, 89, 187, 0.08),
+                        inset 0 0 30px 0 rgba(0, 89, 187, 0.1);
+        }
+        .logo-text-cannon {
+            display: inline-block;
+            background: linear-gradient(135deg, #0059bb 0%, #75e7fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            filter: drop-shadow(0 0 15px rgba(117, 231, 254, 0.5));
+            animation: textPulse 3s ease-in-out infinite;
+        }
+        .logo-text-shooter {
+            display: inline-block;
+            background: linear-gradient(135deg, #191c1d 0%, #414754 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.15));
+            animation: textPulse 3s ease-in-out infinite 1.5s;
+        }
+        .dark .logo-text-shooter {
+            background: linear-gradient(135deg, #ffffff 0%, #e1e3e4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.25));
+        }
+        @keyframes textPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 15px rgba(117, 231, 254, 0.4));
+            }
+            50% {
+                transform: scale(1.03);
+                filter: drop-shadow(0 0 30px rgba(117, 231, 254, 0.85));
+            }
+        }
+
         /* Profile popup */
         .profile-overlay {
             position: fixed;
@@ -397,10 +464,20 @@
                 </div>
 
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="mb-12 flex flex-col items-center text-center">
-                        <h1 class="font-headline text-6xl md:text-8xl font-black text-primary tracking-[-0.04em] uppercase leading-none">
-                            <span class="title-cannon">CANNON</span><br/><span class="title-shooter text-on-background opacity-90">SHOOTER</span>
-                        </h1>
+                    <div class="mb-12 flex flex-col items-center text-center relative select-none">
+                        <!-- Neon Glow ring aura behind the logo -->
+                        <div class="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-r from-cyan-400/20 to-blue-600/20 opacity-40 blur-2xl animate-pulse"></div>
+                        <div class="relative logo-glow-container flex flex-col items-center">
+                            <!-- Tactical Badge -->
+                            <div class="mb-3 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary dark:text-cyan-400 dark:border-cyan-400/30 text-[9px] font-extrabold tracking-[0.25em] uppercase flex items-center gap-1.5 backdrop-blur-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                Tactical Defense System
+                            </div>
+                            <h1 class="font-headline text-6xl md:text-8xl font-black tracking-[-0.04em] uppercase leading-none flex flex-col items-center">
+                                <span class="logo-text-cannon">CANNON</span>
+                                <span class="logo-text-shooter">SHOOTER</span>
+                            </h1>
+                        </div>
                     </div>
 
                     <div class="bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] w-full max-w-sm shadow-[0_32px_64px_-16px_rgba(0,89,187,0.08)] flex flex-col gap-4">

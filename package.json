@@ -33,6 +33,7 @@
       "style.css",
       "game.js",
       "ui.js",
+      "menu_bg.js",
       "cannon_sprite.png",
       "game_bg.png",
       "shoot.mp3",

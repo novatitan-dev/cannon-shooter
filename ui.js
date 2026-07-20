@@ -206,6 +206,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     previousScreen = screen;
                 }
             });
+
+            // Toggle "Exit to Home" button visibility based on whether we came from active gameplay
+            const exitBtn = document.getElementById('settings-exit-to-home-btn');
+            if (exitBtn) {
+                if (previousScreen === screens.gameHUD) {
+                    exitBtn.classList.remove('hidden');
+                } else {
+                    exitBtn.classList.add('hidden');
+                }
+            }
         }
 
         Object.values(screens).forEach(screen => {
@@ -486,6 +496,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.GodotBridge && typeof window.GodotBridge.exitApp === 'function') {
                 window.GodotBridge.exitApp();
             }
+        };
+    }
+
+    const exitToHomeBtn = document.getElementById('settings-exit-to-home-btn');
+    if (exitToHomeBtn) {
+        exitToHomeBtn.onclick = () => {
+            console.log('Event: Exit to Home from Settings Clicked');
+            if (window.GodotBridge) {
+                window.GodotBridge.stopGame();
+            }
+            if (window.Game) {
+                window.Game.isRunning = false;
+                window.Game.isPaused = false;
+            }
+            state.isPaused = false;
+            if (buttons.pause) buttons.pause.innerText = 'pause';
+            showScreen(screens.mainMenu);
         };
     }
 

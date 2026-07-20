@@ -221,9 +221,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MAIN NAVIGATION LISTENERS ---
 
+    function updateModeSelectionUI() {
+        // Classic mode high score
+        const classicHigh = localStorage.getItem('cs_classic_highscore');
+        const hsBlock = document.getElementById('classic-highscore-block');
+        const hsVal = document.getElementById('classic-highscore-val');
+        if (hsBlock && hsVal) {
+            if (classicHigh) {
+                hsVal.textContent = parseInt(classicHigh, 10).toLocaleString() + ' PTS';
+                hsBlock.classList.remove('hidden');
+            } else {
+                hsBlock.classList.add('hidden');
+            }
+        }
+
+        // Challenge missions cleared count
+        const challenges = ['time_attack', 'iron_dome', 'pure_skill', 'titan_brawl'];
+        let clearedCount = 0;
+        challenges.forEach(id => {
+            if (localStorage.getItem(`cs_challenge_${id}`)) {
+                clearedCount++;
+            }
+        });
+        const statsBlock = document.getElementById('challenge-stats-block');
+        const clearedVal = document.getElementById('challenge-cleared-val');
+        if (statsBlock && clearedVal) {
+            if (clearedCount > 0) {
+                clearedVal.textContent = `${clearedCount}/4`;
+                statsBlock.classList.remove('hidden');
+            } else {
+                statsBlock.classList.add('hidden');
+            }
+        }
+    }
+
     if (buttons.play) {
         buttons.play.onclick = () => {
             console.log('Event: Play Clicked -> Show Mode Selection');
+            updateModeSelectionUI();
             showScreen(screens.modeSelection);
         };
     }
@@ -261,18 +296,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = `cs_challenge_${id}`;
             const record = localStorage.getItem(key);
             const labelEl = document.getElementById(`record-${id.replace('_', '-')}`);
+            const blockEl = document.getElementById(`record-block-${id.replace('_', '-')}`);
             if (labelEl) {
                 if (record) {
                     if (id === 'time_attack' || id === 'titan_brawl') {
                         labelEl.textContent = `${record}s (Cleared)`;
-                        labelEl.className = "font-bold text-emerald-500";
+                        labelEl.className = "font-black text-emerald-500";
                     } else {
                         labelEl.textContent = 'Cleared';
-                        labelEl.className = "font-bold text-emerald-500";
+                        labelEl.className = "font-black text-emerald-500";
                     }
+                    if (blockEl) blockEl.classList.remove('hidden');
                 } else {
                     labelEl.textContent = id === 'time_attack' || id === 'titan_brawl' ? '--' : 'Not Cleared';
-                    labelEl.className = "font-bold text-slate-400 dark:text-slate-500";
+                    labelEl.className = "font-black text-slate-400 dark:text-slate-500";
+                    if (blockEl) blockEl.classList.add('hidden');
                 }
             }
         });
@@ -534,8 +572,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 iconEl.className = 'material-symbols-outlined text-error';
             }
             if (scoreLabelEl) scoreLabelEl.innerText = 'FINAL SCORE';
-            if (displays.finalScore) displays.finalScore.innerText = stats.score || state.score;
+            const finalScore = stats.score || state.score;
+            if (displays.finalScore) displays.finalScore.innerText = finalScore;
             if (scoreUnitEl) scoreUnitEl.innerText = 'PTS';
+
+            // Save classic high score to localStorage
+            const currentHigh = parseInt(localStorage.getItem('cs_classic_highscore') || '0', 10);
+            if (finalScore > currentHigh) {
+                localStorage.setItem('cs_classic_highscore', finalScore.toString());
+            }
         }
 
         if (displays.accuracy) displays.accuracy.innerText = (stats.accuracy || 0) + '%';

@@ -435,6 +435,115 @@
         .consent-overlay.active .consent-card {
             transform: scale(1) translateY(0);
         }
+
+        /* Kinetic Architect Mode Cards */
+        .mode-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 89, 187, 0.12);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 440px;
+            box-shadow: 0 10px 30px rgba(0, 89, 187, 0.03);
+        }
+        .dark .mode-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .mode-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(117, 231, 254, 0.45);
+            box-shadow: 0 24px 48px -12px rgba(0, 89, 187, 0.16),
+                        0 0 32px 0 rgba(117, 231, 254, 0.2);
+        }
+        .mode-illustration-container {
+            background: rgba(0, 89, 187, 0.03);
+            border: 1px solid rgba(0, 89, 187, 0.06);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .dark .mode-illustration-container {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.04);
+        }
+        .mode-card:hover .mode-illustration-container {
+            background: rgba(0, 89, 187, 0.06);
+            border-color: rgba(117, 231, 254, 0.2);
+        }
+        .dark .mode-card:hover .mode-illustration-container {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(117, 231, 254, 0.2);
+        }
+
+        /* SVG illustrations animations */
+        @keyframes rotateOuter {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.65; transform: scale(1.06); }
+        }
+        @keyframes floatBall {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulseTarget {
+            0%, 100% { transform: scale(0.92); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .animate-rotate-outer {
+            animation: rotateOuter 15s linear infinite;
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 2.5s ease-in-out infinite;
+        }
+        .animate-float-ball {
+            animation: floatBall 3.5s ease-in-out infinite;
+        }
+        .animate-pulse-target {
+            animation: pulseTarget 1.8s ease-in-out infinite;
+        }
+
+        /* Animated play buttons */
+        .btn-animated-play {
+            position: relative;
+            background: linear-gradient(135deg, #0059bb 0%, #0070ea 100%);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-animated-play::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: all 0.7s ease;
+        }
+        .btn-animated-play:hover {
+            box-shadow: 0 8px 24px rgba(0, 89, 187, 0.35);
+            transform: scale(1.02);
+            filter: brightness(1.08);
+        }
+        .btn-animated-play:hover::after {
+            left: 100%;
+        }
+        .btn-animated-play:active {
+            transform: scale(0.98);
+        }
+
+        .difficulty-star {
+            color: #ffaa00;
+            filter: drop-shadow(0 0 4px rgba(255, 170, 0, 0.4));
+        }
     </style>
 </head>
 <body class="bg-background font-body text-on-background min-h-screen overflow-hidden">
@@ -510,43 +619,121 @@
 
             <main class="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pt-20">
                 <!-- Classic Mode Card -->
-                <div class="bg-surface-container-lowest border border-slate-200/50 dark:border-slate-800 p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[350px]">
+                <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-4xl">infinite</span>
+                        <!-- Illustration Container -->
+                        <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-4 flex items-center justify-center">
+                            <svg class="w-full h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="50" r="40" fill="url(#classic-glow)" class="animate-pulse-glow" />
+                                <g class="animate-float-ball">
+                                    <circle cx="60" cy="30" r="10" fill="#ff5f5f" filter="drop-shadow(0 0 4px rgba(255,95,95,0.6))" />
+                                    <path d="M 60 30 Q 80 15 100 35" stroke="rgba(255,95,95,0.3)" stroke-width="2" stroke-dasharray="4 2" />
+                                </g>
+                                <g style="animation: floatBall 5.0s ease-in-out infinite 1.2s;">
+                                    <circle cx="140" cy="40" r="13" fill="#5fff5f" filter="drop-shadow(0 0 4px rgba(95,255,95,0.6))" />
+                                    <path d="M 140 40 Q 120 20 100 45" stroke="rgba(95,255,95,0.3)" stroke-width="2" stroke-dasharray="4 2" />
+                                </g>
+                                <g style="animation: floatBall 4.2s ease-in-out infinite 0.6s;">
+                                    <circle cx="100" cy="22" r="8" fill="#5f5fff" filter="drop-shadow(0 0 4px rgba(95,95,255,0.6))" />
+                                </g>
+                                <rect x="90" y="80" width="20" height="20" rx="4" fill="#0059bb" />
+                                <rect x="97" y="72" width="6" height="10" fill="#75e7fe" />
+                                <circle cx="100" cy="72" r="4" fill="#00ffff" class="animate-pulse" />
+                                <defs>
+                                    <radialGradient id="classic-glow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#0070ea" stop-opacity="0.35" />
+                                        <stop offset="100%" stop-color="#0070ea" stop-opacity="0" />
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-2xl font-black tracking-tight text-on-surface">Classic Mode</h3>
-                                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Endurance Wave</p>
+                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Endurance Wave</p>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                <div class="flex text-amber-500">
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm text-slate-300 dark:text-slate-700">star</span>
+                                    <span class="material-symbols-outlined text-sm text-slate-300 dark:text-slate-700">star</span>
+                                </div>
                             </div>
                         </div>
-                        <p class="text-sm text-on-surface-variant leading-relaxed">
-                            Deploy the cannon to defend against endless bouncing waves of increasing frequency. Earn score multipliers, collect shields, bombs, and double-fires. Utilize a single Ad Revive to extend your run.
+                        <p class="text-xs text-on-surface-variant leading-relaxed">
+                            Deploy the tactical cannon against endless bouncing waves of increasing frequency. Earn multipliers, collect shields, bombs, and double-fires.
                         </p>
                     </div>
-                    <button id="launch-classic-btn" class="mt-6 w-full bg-primary text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase hover:shadow-lg hover:shadow-primary/20 active:translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-sm">rocket_launch</span>
-                        Launch Classic
-                    </button>
+                    <div class="mt-6 pt-4 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-4">
+                        <div id="classic-highscore-block" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                            <span>PERSONAL BEST:</span>
+                            <span id="classic-highscore-val" class="text-primary font-black text-sm tracking-tight">--</span>
+                        </div>
+                        <button id="launch-classic-btn" class="btn-animated-play w-full text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                            Launch Classic
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Challenge Mode Card -->
-                <div class="bg-surface-container-lowest border border-slate-200/50 dark:border-slate-800 p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[350px]">
+                <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-4xl">trophy</span>
+                        <!-- Illustration Container -->
+                        <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-4 flex items-center justify-center">
+                            <svg class="w-full h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="50" r="45" fill="url(#challenge-glow)" class="animate-pulse-glow" />
+                                <circle cx="100" cy="50" r="35" stroke="rgba(117,231,254,0.15)" stroke-width="1" stroke-dasharray="3 3" />
+                                <circle cx="100" cy="50" r="20" stroke="rgba(117,231,254,0.25)" stroke-width="1" />
+                                <line x1="100" y1="10" x2="100" y2="90" stroke="rgba(117,231,254,0.15)" stroke-width="1" />
+                                <line x1="60" y1="50" x2="140" y2="50" stroke="rgba(117,231,254,0.15)" stroke-width="1" />
+                                <line x1="100" y1="50" x2="130" y2="30" stroke="#75e7fe" stroke-width="1.5" class="origin-center animate-rotate-outer" style="transform-origin: 100px 50px;" />
+                                <g class="animate-pulse-target">
+                                    <circle cx="100" cy="50" r="6" stroke="#ffaa00" stroke-width="1.5" />
+                                    <line x1="100" y1="40" x2="100" y2="60" stroke="#ffaa00" stroke-width="1.5" />
+                                    <line x1="90" y1="50" x2="110" y2="50" stroke="#ffaa00" stroke-width="1.5" />
+                                </g>
+                                <defs>
+                                    <radialGradient id="challenge-glow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#ffaa00" stop-opacity="0.25" />
+                                        <stop offset="100%" stop-color="#ffaa00" stop-opacity="0" />
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-2xl font-black tracking-tight text-on-surface">Challenge Mode</h3>
-                                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Precision Operations</p>
+                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Precision Operations</p>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                <div class="flex text-amber-500">
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                    <span class="material-symbols-outlined text-sm difficulty-star">star</span>
+                                </div>
                             </div>
                         </div>
-                        <p class="text-sm text-on-surface-variant leading-relaxed">
-                            Test your tactical capabilities in 4 custom-crafted operations. Navigate time limits, powerless survival parameters, high intensity waves, and face the giant multi-splitting Titan Ball.
+                        <p class="text-xs text-on-surface-variant leading-relaxed">
+                            Test your tactical capabilities in custom-crafted operations. Navigate extreme time limits, powerless survival, and the giant splitting Titan Ball.
                         </p>
                     </div>
-                    <button id="select-challenges-btn" class="mt-6 w-full bg-secondary text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase hover:shadow-lg hover:shadow-secondary/20 active:translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-sm">list_alt</span>
-                        Select Mission
-                    </button>
+                    <div class="mt-6 pt-4 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-4">
+                        <div id="challenge-stats-block" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                            <span>MISSIONS CLEARED:</span>
+                            <span id="challenge-cleared-val" class="text-emerald-500 font-black text-sm">0/4</span>
+                        </div>
+                        <button id="select-challenges-btn" class="btn-animated-play w-full text-on-primary py-4 px-6 rounded-xl font-bold tracking-widest text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #006877 0%, #008fa5 100%);">
+                            <span class="material-symbols-outlined text-sm">list_alt</span>
+                            Select Mission
+                        </button>
+                    </div>
                 </div>
             </main>
         </section>
@@ -565,83 +752,177 @@
             <main class="relative z-10 w-full max-w-5xl px-6 pt-24 pb-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Operation 1: Time Attack -->
-                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: TIME ATTACK</span>
-                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                    <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-2 flex items-center justify-center">
+                                <svg class="w-full h-24" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="100" cy="40" r="22" stroke="#0070ea" stroke-width="2" />
+                                    <line x1="100" y1="40" x2="100" y2="24" stroke="#0070ea" stroke-width="2" class="origin-center" style="transform-origin: 100px 40px; animation: rotateOuter 5s linear infinite;" />
+                                    <line x1="100" y1="40" x2="112" y2="40" stroke="#75e7fe" stroke-width="1.5" />
+                                    <circle cx="100" cy="18" r="2" fill="#0059bb" />
+                                    <line x1="60" y1="30" x2="70" y2="30" stroke="#75e7fe" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+                                    <line x1="55" y1="40" x2="68" y2="40" stroke="#75e7fe" stroke-width="2" stroke-linecap="round" opacity="0.4" />
+                                    <line x1="58" y1="50" x2="65" y2="50" stroke="#75e7fe" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+                                </svg>
                             </div>
-                            <h4 class="text-lg font-extrabold text-on-surface">Operation Blitz</h4>
-                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
-                                Clear 30 balls as fast as possible. Efficiency is paramount.
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-extrabold text-on-surface">Operation Blitz</h4>
+                                    <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Time Attack</p>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                    <div class="flex text-amber-500">
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Clear 30 bouncing spheres as fast as possible. Absolute efficiency and speed are required.
                             </p>
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
-                                Best Record: <span id="record-time-attack" class="font-bold text-on-surface">--</span>
-                            </div>
                         </div>
-                        <button id="launch-challenge-time-attack" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
-                            Start Blitz
-                        </button>
+                        <div class="mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-3">
+                            <div id="record-block-time-attack" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                                <span>BEST RECORD:</span>
+                                <span id="record-time-attack" class="text-primary font-black">--</span>
+                            </div>
+                            <button id="launch-challenge-time-attack" class="btn-animated-play w-full text-on-primary py-3 rounded-xl font-bold tracking-widest text-[10px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                                Start Blitz
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Operation 2: Iron Dome -->
-                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: IRON DOME</span>
-                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                    <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-2 flex items-center justify-center">
+                                <svg class="w-full h-24" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M 70 65 A 30 30 0 0 1 130 65" stroke="#00ffff" stroke-width="2" fill="rgba(0, 255, 255, 0.08)" class="animate-pulse" />
+                                    <line x1="50" y1="65" x2="150" y2="65" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+                                    <circle cx="85" cy="25" r="4" fill="#ff5f5f" />
+                                    <path d="M 85 25 Q 92 38 100 45" stroke="#ff5f5f" stroke-width="1" stroke-dasharray="2 2" />
+                                    <circle cx="100" cy="45" r="3" fill="#ffff5f" class="animate-ping" />
+                                </svg>
                             </div>
-                            <h4 class="text-lg font-extrabold text-on-surface">Operation Iron Dome</h4>
-                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
-                                Survive 60 seconds against rapid ball spawns. No revives allowed.
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-extrabold text-on-surface">Operation Iron Dome</h4>
+                                    <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Rapid Survival</p>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                    <div class="flex text-amber-500">
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Survive for 60 seconds against rapid ball spawns. No revives, no margin for error.
                             </p>
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
-                                Status: <span id="record-iron-dome" class="font-bold text-on-surface">Not Cleared</span>
-                            </div>
                         </div>
-                        <button id="launch-challenge-iron-dome" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
-                            Start Defense
-                        </button>
+                        <div class="mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-3">
+                            <div id="record-block-iron-dome" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                                <span>STATUS:</span>
+                                <span id="record-iron-dome" class="text-primary font-black">Not Cleared</span>
+                            </div>
+                            <button id="launch-challenge-iron-dome" class="btn-animated-play w-full text-on-primary py-3 rounded-xl font-bold tracking-widest text-[10px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                                Start Defense
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Operation 3: Pure Skill -->
-                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: PURE SKILL</span>
-                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                    <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-2 flex items-center justify-center">
+                                <svg class="w-full h-24" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="100" cy="40" r="20" stroke="#a855f7" stroke-width="2" />
+                                    <circle cx="100" cy="40" r="10" stroke="#c084fc" stroke-width="1" />
+                                    <circle cx="100" cy="40" r="3" fill="#a855f7" />
+                                    <line x1="100" y1="12" x2="100" y2="68" stroke="#a855f7" stroke-width="1.5" />
+                                    <line x1="72" y1="40" x2="128" y2="40" stroke="#a855f7" stroke-width="1.5" />
+                                </svg>
                             </div>
-                            <h4 class="text-lg font-extrabold text-on-surface">Operation Pure Skill</h4>
-                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
-                                Survive 45 seconds. Power-up drops (Shield, Double Fire, Bomb) are completely offline.
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-extrabold text-on-surface">Operation Pure Skill</h4>
+                                    <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">No Power-Ups</p>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                    <div class="flex text-amber-500">
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs text-slate-300 dark:text-slate-700">star</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Survive for 45 seconds. Power-up drops (Shield, Double Fire, Bomb) are completely disabled.
                             </p>
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
-                                Status: <span id="record-pure-skill" class="font-bold text-on-surface">Not Cleared</span>
-                            </div>
                         </div>
-                        <button id="launch-challenge-pure-skill" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
-                            Start Operations
-                        </button>
+                        <div class="mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-3">
+                            <div id="record-block-pure-skill" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                                <span>STATUS:</span>
+                                <span id="record-pure-skill" class="text-primary font-black">Not Cleared</span>
+                            </div>
+                            <button id="launch-challenge-pure-skill" class="btn-animated-play w-full text-on-primary py-3 rounded-xl font-bold tracking-widest text-[10px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                                Start Operations
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Operation 4: Titan Brawl -->
-                    <div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border border-slate-200/50 dark:border-slate-800 shadow-md hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md">OP: TITAN BRAWL</span>
-                                <div class="flex text-amber-500"><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span><span class="material-symbols-outlined text-sm">star</span></div>
+                    <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-2 flex items-center justify-center">
+                                <svg class="w-full h-24" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="100" cy="35" r="16" fill="#eab308" stroke="#fef08a" stroke-width="2" class="animate-pulse" />
+                                    <circle cx="65" cy="55" r="9" fill="#f59e0b" stroke="#fef08a" stroke-width="1.5" />
+                                    <circle cx="135" cy="55" r="9" fill="#f59e0b" stroke="#fef08a" stroke-width="1.5" />
+                                    <path d="M 85 45 L 75 50" stroke="#eab308" stroke-width="1.5" stroke-dasharray="2 2" />
+                                    <path d="M 115 45 L 125 50" stroke="#eab308" stroke-width="1.5" stroke-dasharray="2 2" />
+                                </svg>
                             </div>
-                            <h4 class="text-lg font-extrabold text-on-surface">Operation Titan Brawl</h4>
-                            <p class="text-xs text-on-surface-variant leading-relaxed mt-2">
-                                Defeat the giant Titan Ball. Splits into smaller and smaller bounce balls.
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-extrabold text-on-surface">Operation Titan Brawl</h4>
+                                    <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Boss Battle</p>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                    <div class="flex text-amber-500">
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                        <span class="material-symbols-outlined text-xs difficulty-star">star</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">
+                                Defeat the giant, splitting Titan Ball. Precision aiming is required as it segments.
                             </p>
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-medium">
-                                Best Record: <span id="record-titan-brawl" class="font-bold text-on-surface">--</span>
-                            </div>
                         </div>
-                        <button id="launch-challenge-titan-brawl" class="mt-4 w-full bg-primary text-on-primary py-3 rounded-lg font-bold tracking-widest text-[10px] uppercase hover:brightness-110 active:translate-y-0.5 transition-all">
-                            Start Brawl
-                        </button>
+                        <div class="mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-3">
+                            <div id="record-block-titan-brawl" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                                <span>BEST RECORD:</span>
+                                <span id="record-titan-brawl" class="text-primary font-black">--</span>
+                            </div>
+                            <button id="launch-challenge-titan-brawl" class="btn-animated-play w-full text-on-primary py-3 rounded-xl font-bold tracking-widest text-[10px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                                Start Brawl
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>

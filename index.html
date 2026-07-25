@@ -593,8 +593,8 @@
         /* Base Challenge Card with Animated Gradient Border */
         .mission-card {
             position: relative;
-            border-radius: 2rem;
-            padding: 1.5rem;
+            border-radius: 1.5rem;
+            padding: 1.15rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -609,8 +609,8 @@
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 2rem;
-            padding: 2.5px;
+            border-radius: 1.5rem;
+            padding: 2px;
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -917,24 +917,24 @@
         </section>
 
         <!-- CHALLENGE SELECTION -->
-        <section id="challenge-selection" class="screen hidden w-full h-full flex flex-col items-center justify-center relative bg-background overflow-y-auto">
-            <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
+        <section id="challenge-selection" class="screen hidden w-full min-h-screen flex flex-col items-center justify-start relative bg-background overflow-y-auto pt-16 pb-6">
+            <header class="fixed top-0 w-full z-50 px-6 py-3.5 flex justify-between items-center bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/50">
                 <div class="flex items-center gap-4">
-                    <button id="challenge-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
-                        <span class="material-symbols-outlined text-primary">arrow_back</span>
+                    <button id="challenge-back-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-blue-500/10 text-cyan-400 transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
                     </button>
                     <span class="font-headline text-xl md:text-2xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">CHALLENGE OPERATIONS</span>
                 </div>
             </header>
 
-            <main class="relative z-10 w-full max-w-5xl px-6 pt-24 pb-12">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <main class="relative z-10 w-full max-w-5xl px-4 sm:px-6 pt-4 pb-6 my-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                     <!-- Operation 1: Time Attack (BLUE) -->
                     <div class="mission-card mission-card-time-attack">
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <!-- Mission Thumbnail -->
                             <div class="mission-thumbnail mission-thumbnail-blue">
-                                <svg class="w-full h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="w-full h-20 sm:h-24" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="120" cy="50" r="45" fill="url(#time-glow)" opacity="0.6" />
                                     <defs>
                                         <radialGradient id="time-glow" cx="50%" cy="50%" r="50%">
@@ -966,13 +966,13 @@
                             </div>
                             <!-- Title & Header info -->
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.3)]">
-                                        <span class="material-symbols-outlined text-xl">timer</span>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.3)]">
+                                        <span class="material-symbols-outlined text-lg">timer</span>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-black text-white tracking-tight">Operation Blitz</h4>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 inline-flex items-center gap-1.5">
+                                        <h4 class="text-base font-black text-white tracking-tight">Operation Blitz</h4>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 inline-flex items-center gap-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
                                             Time Attack
                                         </span>
@@ -989,16 +989,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
+                            <p class="text-xs text-slate-300 leading-normal">
                                 Clear 30 bouncing spheres as fast as possible. Absolute efficiency and speed are required.
                             </p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex flex-col gap-3">
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex flex-col gap-2">
                             <div id="record-block-time-attack" class="hidden flex justify-between items-center text-xs font-bold text-slate-300">
                                 <span>BEST RECORD:</span>
                                 <span id="record-time-attack" class="text-cyan-400 font-black">--</span>
                             </div>
-                            <button id="launch-challenge-time-attack" class="btn-animated-play mission-btn-blue w-full text-white py-3.5 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                            <button id="launch-challenge-time-attack" class="btn-animated-play mission-btn-blue w-full text-white py-2.5 sm:py-3 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-sm">timer</span>
                                 Start Blitz
                             </button>
@@ -1007,10 +1007,10 @@
 
                     <!-- Operation 2: Iron Dome (GRAY) -->
                     <div class="mission-card mission-card-iron-dome">
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <!-- Mission Thumbnail -->
                             <div class="mission-thumbnail mission-thumbnail-gray">
-                                <svg class="w-full h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="w-full h-20 sm:h-24" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="120" cy="65" r="45" fill="url(#dome-glow)" opacity="0.5" />
                                     <defs>
                                         <radialGradient id="dome-glow" cx="50%" cy="50%" r="50%">
@@ -1042,13 +1042,13 @@
                             </div>
                             <!-- Title & Header info -->
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-500/20 border border-slate-400/30 flex items-center justify-center text-slate-300 shadow-[0_0_12px_rgba(148,163,184,0.3)]">
-                                        <span class="material-symbols-outlined text-xl">shield</span>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-500/20 border border-slate-400/30 flex items-center justify-center text-slate-300 shadow-[0_0_12px_rgba(148,163,184,0.3)]">
+                                        <span class="material-symbols-outlined text-lg">shield</span>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-black text-white tracking-tight">Operation Iron Dome</h4>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-slate-500/15 text-slate-300 border border-slate-400/30 inline-flex items-center gap-1.5">
+                                        <h4 class="text-base font-black text-white tracking-tight">Operation Iron Dome</h4>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-slate-500/15 text-slate-300 border border-slate-400/30 inline-flex items-center gap-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-ping"></span>
                                             Iron Dome
                                         </span>
@@ -1065,16 +1065,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
+                            <p class="text-xs text-slate-300 leading-normal">
                                 Survive for 60 seconds against rapid ball spawns. No revives, no margin for error.
                             </p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex flex-col gap-3">
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex flex-col gap-2">
                             <div id="record-block-iron-dome" class="hidden flex justify-between items-center text-xs font-bold text-slate-300">
                                 <span>STATUS:</span>
                                 <span id="record-iron-dome" class="text-slate-300 font-black">Not Cleared</span>
                             </div>
-                            <button id="launch-challenge-iron-dome" class="btn-animated-play mission-btn-gray w-full text-white py-3.5 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                            <button id="launch-challenge-iron-dome" class="btn-animated-play mission-btn-gray w-full text-white py-2.5 sm:py-3 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-sm">shield</span>
                                 Start Defense
                             </button>
@@ -1083,10 +1083,10 @@
 
                     <!-- Operation 3: Pure Skill (PURPLE) -->
                     <div class="mission-card mission-card-pure-skill">
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <!-- Mission Thumbnail -->
                             <div class="mission-thumbnail mission-thumbnail-purple">
-                                <svg class="w-full h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="w-full h-20 sm:h-24" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="120" cy="50" r="45" fill="url(#purple-glow)" opacity="0.6" />
                                     <defs>
                                         <radialGradient id="purple-glow" cx="50%" cy="50%" r="50%">
@@ -1116,13 +1116,13 @@
                             </div>
                             <!-- Title & Header info -->
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.3)]">
-                                        <span class="material-symbols-outlined text-xl">diamond</span>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.3)]">
+                                        <span class="material-symbols-outlined text-lg">diamond</span>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-black text-white tracking-tight">Operation Pure Skill</h4>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-purple-500/15 text-purple-300 border border-purple-400/30 inline-flex items-center gap-1.5">
+                                        <h4 class="text-base font-black text-white tracking-tight">Operation Pure Skill</h4>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-purple-500/15 text-purple-300 border border-purple-400/30 inline-flex items-center gap-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
                                             Pure Skill
                                         </span>
@@ -1139,16 +1139,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
+                            <p class="text-xs text-slate-300 leading-normal">
                                 Survive for 45 seconds. Power-up drops (Shield, Double Fire, Bomb) are completely disabled.
                             </p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex flex-col gap-3">
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex flex-col gap-2">
                             <div id="record-block-pure-skill" class="hidden flex justify-between items-center text-xs font-bold text-slate-300">
                                 <span>STATUS:</span>
                                 <span id="record-pure-skill" class="text-purple-400 font-black">Not Cleared</span>
                             </div>
-                            <button id="launch-challenge-pure-skill" class="btn-animated-play mission-btn-purple w-full text-white py-3.5 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                            <button id="launch-challenge-pure-skill" class="btn-animated-play mission-btn-purple w-full text-white py-2.5 sm:py-3 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-sm">diamond</span>
                                 Start Operations
                             </button>
@@ -1157,10 +1157,10 @@
 
                     <!-- Operation 4: Titan Brawl (ORANGE) -->
                     <div class="mission-card mission-card-titan-brawl">
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <!-- Mission Thumbnail -->
                             <div class="mission-thumbnail mission-thumbnail-orange">
-                                <svg class="w-full h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="w-full h-20 sm:h-24" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="120" cy="45" r="48" fill="url(#titan-glow)" opacity="0.65" />
                                     <defs>
                                         <radialGradient id="titan-glow" cx="50%" cy="50%" r="50%">
@@ -1208,13 +1208,13 @@
                             </div>
                             <!-- Title & Header info -->
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
-                                        <span class="material-symbols-outlined text-xl">smart_toy</span>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
+                                        <span class="material-symbols-outlined text-lg">smart_toy</span>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-black text-white tracking-tight">Operation Titan Brawl</h4>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-orange-500/15 text-orange-400 border border-orange-500/30 inline-flex items-center gap-1.5">
+                                        <h4 class="text-base font-black text-white tracking-tight">Operation Titan Brawl</h4>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-orange-500/15 text-orange-400 border border-orange-500/30 inline-flex items-center gap-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-ping"></span>
                                             Titan Brawl
                                         </span>
@@ -1231,16 +1231,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
+                            <p class="text-xs text-slate-300 leading-normal">
                                 Defeat the giant, splitting Titan Ball. Precision aiming is required as it segments.
                             </p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex flex-col gap-3">
+                        <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex flex-col gap-2">
                             <div id="record-block-titan-brawl" class="hidden flex justify-between items-center text-xs font-bold text-slate-300">
                                 <span>BEST RECORD:</span>
                                 <span id="record-titan-brawl" class="text-orange-400 font-black">--</span>
                             </div>
-                            <button id="launch-challenge-titan-brawl" class="btn-animated-play mission-btn-orange w-full text-white py-3.5 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
+                            <button id="launch-challenge-titan-brawl" class="btn-animated-play mission-btn-orange w-full text-white py-2.5 sm:py-3 rounded-xl font-extrabold tracking-widest text-[11px] uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-sm">smart_toy</span>
                                 Start Brawl
                             </button>

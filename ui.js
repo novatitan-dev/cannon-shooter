@@ -43,9 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         launchClassic: document.getElementById('launch-classic-btn'),
         selectChallenges: document.getElementById('select-challenges-btn'),
         launchTimeAttack: document.getElementById('launch-challenge-time-attack'),
-        launchIronDome: document.getElementById('launch-challenge-iron-dome'),
-        launchPureSkill: document.getElementById('launch-challenge-pure-skill'),
-        launchTitanBrawl: document.getElementById('launch-challenge-titan-brawl')
+        launchIronDome: document.getElementById('launch-challenge-iron-dome')
     };
 
     // Volume sliders
@@ -253,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Challenge missions cleared count
-        const challenges = ['time_attack', 'iron_dome', 'pure_skill', 'titan_brawl'];
+        const challenges = ['time_attack', 'iron_dome'];
         let clearedCount = 0;
         challenges.forEach(id => {
             if (localStorage.getItem(`cs_challenge_${id}`)) {
@@ -264,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clearedVal = document.getElementById('challenge-cleared-val');
         if (statsBlock && clearedVal) {
             if (clearedCount > 0) {
-                clearedVal.textContent = `${clearedCount}/4`;
+                clearedVal.textContent = `${clearedCount}/2`;
                 statsBlock.classList.remove('hidden');
             } else {
                 statsBlock.classList.add('hidden');
@@ -308,15 +306,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateChallengeSelectionUI() {
-        const challenges = ['time_attack', 'iron_dome', 'pure_skill', 'titan_brawl'];
+        const challenges = ['time_attack', 'iron_dome'];
+        let clearedCount = 0;
         challenges.forEach(id => {
             const key = `cs_challenge_${id}`;
             const record = localStorage.getItem(key);
+            if (record) {
+                clearedCount++;
+            }
+            
             const labelEl = document.getElementById(`record-${id.replace('_', '-')}`);
             const blockEl = document.getElementById(`record-block-${id.replace('_', '-')}`);
             if (labelEl) {
                 if (record) {
-                    if (id === 'time_attack' || id === 'titan_brawl') {
+                    if (id === 'time_attack') {
                         labelEl.textContent = `${record}s (Cleared)`;
                         labelEl.className = "font-black text-emerald-500";
                     } else {
@@ -325,12 +328,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (blockEl) blockEl.classList.remove('hidden');
                 } else {
-                    labelEl.textContent = id === 'time_attack' || id === 'titan_brawl' ? '--' : 'Not Cleared';
+                    labelEl.textContent = id === 'time_attack' ? '--' : 'Not Cleared';
                     labelEl.className = "font-black text-slate-400 dark:text-slate-500";
                     if (blockEl) blockEl.classList.add('hidden');
                 }
             }
         });
+
+        const progressEl = document.getElementById('challenge-progress');
+        if (progressEl) {
+            progressEl.textContent = `${clearedCount} / 2 Missions`;
+        }
     }
 
     if (buttons.selectChallenges) {
@@ -373,12 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buttons.launchIronDome) {
         buttons.launchIronDome.onclick = () => startChallenge('iron_dome');
     }
-    if (buttons.launchPureSkill) {
-        buttons.launchPureSkill.onclick = () => startChallenge('pure_skill');
-    }
-    if (buttons.launchTitanBrawl) {
-        buttons.launchTitanBrawl.onclick = () => startChallenge('titan_brawl');
-    }
+
 
     // --- REVIVE LOGIC ---
     let reviveTimerInterval;
@@ -598,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (stats.challengeId === 'time_attack' || stats.challengeId === 'titan_brawl') {
+            if (stats.challengeId === 'time_attack') {
                 if (scoreLabelEl) scoreLabelEl.innerText = 'COMPLETION TIME';
                 if (displays.finalScore) {
                     const elapsed = stats.rawTimeMs ? (stats.rawTimeMs / 1000).toFixed(1) : (state.score / 1000).toFixed(1);

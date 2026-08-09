@@ -581,10 +581,7 @@ class GameEngine {
     }
 
     spawnBall() {
-        if (this.gameMode === 'challenge' && this.activeChallengeId === 'titan_brawl') {
-            // No auto spawning in Titan Brawl! Only split balls remain.
-            return;
-        }
+
 
         const elapsed = this.gameTimeMs / 1000;
         const progress = Math.min(elapsed / 180, 1);
@@ -619,26 +616,12 @@ class GameEngine {
     }
 
     splitBall(ball) {
-        if (this.gameMode === 'challenge' && this.activeChallengeId === 'titan_brawl') {
-            if (ball.size > 18) {
-                const newSize = ball.size / 1.5;
-                const newHealth = Math.ceil(ball.maxHealth / 2);
-                // Keep the vertical bounce lively: give it a slight upward boost on split
-                const leftBall = new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3.5);
-                leftBall.vy = -4; // upward jump on split!
-                const rightBall = new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3.5);
-                rightBall.vy = -4; // upward jump on split!
-                this.balls.push(leftBall);
-                this.balls.push(rightBall);
-            }
-        } else {
-            // Only split if the ball's health was high (prevents clutter)
-            if (ball.maxHealth > 60) {
-                const newSize = ball.size / 1.5;
-                const newHealth = Math.ceil(ball.maxHealth / 2);
-                this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3));
-                this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3));
-            }
+        // Only split if the ball's health was high (prevents clutter)
+        if (ball.maxHealth > 60) {
+            const newSize = ball.size / 1.5;
+            const newHealth = Math.ceil(ball.maxHealth / 2);
+            this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3));
+            this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3));
         }
     }
 
@@ -784,7 +767,7 @@ class GameEngine {
         
         // Save status in localStorage
         const key = `cs_challenge_${this.activeChallengeId}`;
-        if (this.activeChallengeId === 'time_attack' || this.activeChallengeId === 'titan_brawl') {
+        if (this.activeChallengeId === 'time_attack') {
             const timeSec = (this.gameTimeMs / 1000).toFixed(1);
             const best = localStorage.getItem(key);
             if (!best || parseFloat(timeSec) < parseFloat(best)) {
@@ -946,14 +929,6 @@ class GameEngine {
                 this.challengeTarget = 30; // 30 balls
             } else if (this.activeChallengeId === 'iron_dome') {
                 this.challengeTarget = 60; // 60 seconds
-            } else if (this.activeChallengeId === 'pure_skill') {
-                this.challengeTarget = 45; // 45 seconds
-            } else if (this.activeChallengeId === 'titan_brawl') {
-                this.challengeTarget = 1; // Titan
-                // Spawn Titan ball in the center, high up
-                const size = 75;
-                const health = 320;
-                this.balls.push(new Ball(this.canvas, this.canvas.width / 2, size + 40, size, health, 3.5));
             }
         }
     }
@@ -1005,7 +980,7 @@ class GameEngine {
         }
 
         // Shield Logic
-        if (this.gameMode !== 'challenge' || this.activeChallengeId !== 'pure_skill') {
+        if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastShieldTime > this.shieldInterval) {
                 const shieldX = Math.random() * (this.canvas.width - 50) + 25;
                 this.shieldDrops.push(new ShieldDrop(this.canvas, shieldX));
@@ -1019,7 +994,7 @@ class GameEngine {
         }
 
         // Double Fire Logic
-        if (this.gameMode !== 'challenge' || this.activeChallengeId !== 'pure_skill') {
+        if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastDoubleFireTime > this.doubleFireInterval) {
                 const doubleX = Math.random() * (this.canvas.width - 50) + 25;
                 this.doubleFireDrops.push(new DoubleFireDrop(this.canvas, doubleX));
@@ -1033,7 +1008,7 @@ class GameEngine {
         }
 
         // Bomb Drop Logic
-        if (this.gameMode !== 'challenge' || this.activeChallengeId !== 'pure_skill') {
+        if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastBombTime > this.bombInterval) {
                 const bombX = Math.random() * (this.canvas.width - 50) + 25;
                 this.bombDrops.push(new BombDrop(this.canvas, bombX));
@@ -1071,15 +1046,6 @@ class GameEngine {
             } else if (this.activeChallengeId === 'iron_dome') {
                 this.challengeProgress = elapsedSec;
                 if (this.challengeProgress >= this.challengeTarget) {
-                    this.challengeWin();
-                }
-            } else if (this.activeChallengeId === 'pure_skill') {
-                this.challengeProgress = elapsedSec;
-                if (this.challengeProgress >= this.challengeTarget) {
-                    this.challengeWin();
-                }
-            } else if (this.activeChallengeId === 'titan_brawl') {
-                if (this.balls.length === 0) {
                     this.challengeWin();
                 }
             }
@@ -1202,14 +1168,6 @@ class GameEngine {
                 if (titleEl) titleEl.textContent = 'DEFEND TIME';
                 const remaining = Math.max(0, this.challengeTarget - this.challengeProgress);
                 if (valEl) valEl.textContent = `${remaining.toFixed(1)}s`;
-            } else if (this.activeChallengeId === 'pure_skill') {
-                if (titleEl) titleEl.textContent = 'SURVIVE TIME';
-                const remaining = Math.max(0, this.challengeTarget - this.challengeProgress);
-                if (valEl) valEl.textContent = `${remaining.toFixed(1)}s`;
-            } else if (this.activeChallengeId === 'titan_brawl') {
-                if (titleEl) titleEl.textContent = 'TITANS REMAINING';
-                // count how many balls are active
-                if (valEl) valEl.textContent = this.balls.length;
             }
         } else {
             goalCard.classList.add('hidden');

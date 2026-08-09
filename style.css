@@ -59,6 +59,29 @@ body {
     display: flex;
 }
 
+/* Challenge Operations — Scroll Override */
+.screen-scrollable {
+    position: fixed !important;
+    inset: 0;
+    z-index: 100;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.screen-scrollable:not(.hidden) {
+    display: flex;
+}
+
+body.challenge-open {
+    overflow: visible !important;
+}
+
 .card {
     background-color: var(--card-bg);
     padding: 3rem;

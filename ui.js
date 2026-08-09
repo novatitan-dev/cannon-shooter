@@ -227,6 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // Toggle body scroll override for challenge screen
+        if (targetScreen === screens.challengeSelection) {
+            document.body.classList.add('challenge-open');
+        } else {
+            document.body.classList.remove('challenge-open');
+        }
     }
 
     // --- MAIN NAVIGATION LISTENERS ---
@@ -331,8 +338,25 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Event: Select Challenges Clicked');
             updateChallengeSelectionUI();
             showScreen(screens.challengeSelection);
+            // Scroll to top when opening
+            if (screens.challengeSelection) screens.challengeSelection.scrollTop = 0;
         };
     }
+
+    // --- Ripple effect for mission buttons ---
+    document.querySelectorAll('.mission-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple-el');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 2;
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            this.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        });
+    });
 
     function startChallenge(challengeId) {
         console.log(`Event: Launch Challenge ${challengeId}`);

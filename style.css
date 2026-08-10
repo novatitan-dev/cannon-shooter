@@ -271,3 +271,24 @@ input[type="range"] {
     height: 100%;
     touch-action: none;
 }
+
+/* ---- Responsive: Small Screens ---- */
+@media (max-width: 640px) {
+  .card { padding: 1.5rem; max-width: 95%; }
+  h1 { font-size: 2rem; }
+  .subtitle { margin-bottom: 1.5rem; }
+  button { font-size: 0.875rem; padding: 0.75rem; }
+  .icon-btn { width: 44px; height: 44px; border-radius: 22px; }
+  .health-bar-container { width: 120px; height: 8px; }
+  .power-meter-container { width: 100px; }
+  .power-meter { height: 10px; }
+  .HUD { padding: 1rem; }
+  .label { font-size: 0.65rem; }
+  .value { font-size: 1.1rem; }
+}
+
+@media (max-width: 380px) {
+  .card { padding: 1rem; }
+  h1 { font-size: 1.75rem; }
+  button { padding: 0.6rem; }
+}

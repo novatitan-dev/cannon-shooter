@@ -109,10 +109,10 @@
         .buff-badge {
             display: none;
             align-items: center;
-            gap: clamp(4px, 0.8vw, 6px);
-            padding: clamp(4px, 0.8vw, 6px) clamp(8px, 1.5vw, 12px);
+            gap: 6px;
+            padding: 6px 12px;
             border-radius: 999px;
-            font-size: clamp(9px, 1.5vw, 11px);
+            font-size: 11px;
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -266,7 +266,7 @@
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding-top: clamp(32px, 8vh, 80px);
+            padding-top: 80px;
             background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -286,8 +286,7 @@
             border-radius: 1.5rem;
             padding: 2rem;
             width: 100%;
-            max-width: min(340px, 90vw);
-            max-height: 85vh; overflow-y: auto;
+            max-width: 340px;
             box-shadow: 0 32px 64px -16px rgba(0,89,187,0.15), 0 0 0 1px rgba(0,89,187,0.04);
             transform: translateY(-20px) scale(0.96);
             opacity: 0;
@@ -298,8 +297,8 @@
             opacity: 1;
         }
         .profile-avatar {
-            width: clamp(56px, 10vw, 72px);
-            height: clamp(56px, 10vw, 72px);
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: linear-gradient(135deg, #0059bb 0%, #75e7fe 100%);
             display: flex;
@@ -309,7 +308,7 @@
             box-shadow: 0 8px 24px -8px rgba(0,89,187,0.3);
         }
         .profile-avatar .material-symbols-outlined {
-            font-size: clamp(28px, 5vw, 36px);
+            font-size: 36px;
             color: #fff;
         }
         .profile-name-input {
@@ -371,7 +370,7 @@
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding-top: clamp(32px, 8vh, 80px);
+            padding-top: 80px;
             background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -391,8 +390,7 @@
             border-radius: 1.5rem;
             padding: 2rem;
             width: 100%;
-            max-width: min(380px, 90vw);
-            max-height: 85vh; overflow-y: auto;
+            max-width: 380px;
             box-shadow: 0 32px 64px -16px rgba(0,89,187,0.15), 0 0 0 1px rgba(0,89,187,0.04);
             transform: translateY(-20px) scale(0.96);
             opacity: 0;
@@ -428,8 +426,7 @@
             border-radius: 2rem;
             padding: 2.5rem 2rem;
             width: 90%;
-            max-width: min(440px, 92vw);
-            max-height: 85vh; overflow-y: auto;
+            max-width: 440px;
             box-shadow: 0 48px 96px -24px rgba(0,89,187,0.25);
             transform: scale(0.9) translateY(20px);
             transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
@@ -451,7 +448,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: clamp(320px, 60vh, 440px);
+            min-height: 440px;
             box-shadow: 0 10px 30px rgba(0, 89, 187, 0.03);
         }
         .dark .mode-card {
@@ -745,23 +742,23 @@
             text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
             transition: transform 0.2s ease;
             animation: starGlow 2.5s ease-in-out infinite;
-            font-size: clamp(14px, 2.5vw, 18px);
+            font-size: 18px;
         }
         .star-filled:hover { transform: scale(1.4); }
         .star-empty {
             color: rgba(148, 163, 184, 0.2);
             transition: transform 0.2s ease;
-            font-size: clamp(14px, 2.5vw, 18px);
+            font-size: 18px;
         }
 
         /* ---- Badges ---- */
         .mission-badge {
             display: inline-flex;
             align-items: center;
-            gap: clamp(4px, 0.8vw, 6px);
-            padding: clamp(3px, 0.6vw, 5px) clamp(8px, 1.5vw, 12px);
+            gap: 6px;
+            padding: 5px 12px;
             border-radius: 9999px;
-            font-size: clamp(9px, 1.5vw, 11px);
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -779,9 +776,9 @@
         /* ---- Pill Buttons ---- */
         .mission-btn {
             width: 100%;
-            padding: clamp(10px, 2vw, 14px) 0;
+            padding: 14px 0;
             border-radius: 9999px;
-            font-size: clamp(13px, 2vw, 16px);
+            font-size: 16px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
@@ -794,7 +791,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: clamp(6px, 1vw, 8px);
+            gap: 8px;
             font-family: inherit;
         }
         .mission-btn:hover { transform: scale(1.03); filter: brightness(1.15); }
@@ -823,7 +820,7 @@
             <!-- Header -->
             <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center max-w-none">
                 <div class="flex items-center">
-                    <span id="profile-btn" class="material-symbols-outlined text-white/80 hover:bg-white/10 p-2 rounded-full cursor-pointer transition-colors" style="font-size:clamp(22px, 4vw, 28px)">account_circle</span>
+                    <span id="profile-btn" class="material-symbols-outlined text-white/80 hover:bg-white/10 p-2 rounded-full cursor-pointer transition-colors" style="font-size:28px">account_circle</span>
                 </div>
                 <div class="flex items-center gap-6">
                     <div class="flex gap-4">
@@ -846,18 +843,18 @@
                         <div class="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-r from-cyan-400/20 to-blue-600/20 opacity-40 blur-2xl animate-pulse"></div>
                         <div class="relative logo-glow-container flex flex-col items-center" style="background:rgba(0,20,50,0.35); border-color:rgba(117,231,254,0.25);">
                             <!-- Tactical Badge -->
-                            <div class="mb-3 px-3 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-[8px] sm:text-[9px] font-extrabold tracking-[0.25em] uppercase flex items-center gap-1.5 backdrop-blur-sm">
+                            <div class="mb-3 px-3 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-[9px] font-extrabold tracking-[0.25em] uppercase flex items-center gap-1.5 backdrop-blur-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
                                 Tactical Defense System
                             </div>
-                            <h1 class="font-headline text-4xl sm:text-6xl md:text-8xl font-black tracking-[-0.04em] uppercase leading-none flex flex-col items-center">
+                            <h1 class="font-headline text-6xl md:text-8xl font-black tracking-[-0.04em] uppercase leading-none flex flex-col items-center">
                                 <span class="logo-text-cannon">CANNON</span>
                                 <span class="logo-text-shooter" style="background:linear-gradient(135deg,#ffffff 0%,#b0d4f1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SHOOTER</span>
                             </h1>
                         </div>
                     </div>
 
-                    <div class="p-5 sm:p-8 md:p-12 rounded-[2rem] w-full max-w-[90vw] sm:max-w-sm flex flex-col gap-4" style="background:rgba(0,20,50,0.4); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(117,231,254,0.15); box-shadow:0 32px 64px -16px rgba(0,0,0,0.3);">
+                    <div class="p-8 md:p-12 rounded-[2rem] w-full max-w-sm flex flex-col gap-4" style="background:rgba(0,20,50,0.4); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(117,231,254,0.15); box-shadow:0 32px 64px -16px rgba(0,0,0,0.3);">
                         <button id="play-btn" class="group relative flex items-center justify-between w-full py-5 px-8 rounded-xl font-bold tracking-widest text-sm hover:shadow-xl active:translate-y-0.5 transition-all" style="background:linear-gradient(135deg,#0059bb,#0070ea); color:#fff; box-shadow:0 0 24px rgba(0,112,234,0.35);">
                             <span class="flex items-center gap-3">
                                 <span class="material-symbols-outlined icon-rocket">rocket_launch</span>
@@ -885,13 +882,13 @@
                 </div>
             </header>
 
-            <main class="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pt-14 sm:pt-20">
+            <main class="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pt-20">
                 <!-- Classic Mode Card -->
                 <div class="mode-card p-6 rounded-[2rem] shadow-xl flex flex-col justify-between">
                     <div class="space-y-4">
                         <!-- Illustration Container -->
                         <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-4 flex items-center justify-center">
-                            <svg class="w-full h-24 sm:h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-full h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="100" cy="50" r="40" fill="url(#classic-glow)" class="animate-pulse-glow" />
                                 <g class="animate-float-ball">
                                     <circle cx="60" cy="30" r="10" fill="#ff5f5f" filter="drop-shadow(0 0 4px rgba(255,95,95,0.6))" />
@@ -952,7 +949,7 @@
                     <div class="space-y-4">
                         <!-- Illustration Container -->
                         <div class="relative w-full rounded-2xl overflow-hidden mode-illustration-container p-4 flex items-center justify-center">
-                            <svg class="w-full h-24 sm:h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-full h-32" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="100" cy="50" r="45" fill="url(#challenge-glow)" class="animate-pulse-glow" />
                                 <circle cx="100" cy="50" r="35" stroke="rgba(117,231,254,0.15)" stroke-width="1" stroke-dasharray="3 3" />
                                 <circle cx="100" cy="50" r="20" stroke="rgba(117,231,254,0.25)" stroke-width="1" />
@@ -1163,16 +1160,16 @@
 
 
                 <!-- Score Card (Left) -->
-                <div class="absolute top-16 left-3 sm:top-24 sm:left-8 z-30">
-                    <div class="glass-hud p-4 rounded-xl shadow-[24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[140px] sm:min-w-[200px]">
+                <div class="absolute top-24 left-8 z-30">
+                    <div class="glass-hud p-4 rounded-xl shadow-[24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px]">
                         <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1">SCORE</p>
                         <h1 id="score-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">000,000</h1>
                     </div>
                 </div>
 
                 <!-- Challenge Goal Card (Right) -->
-                <div id="hud-goal-card" class="absolute top-16 right-3 sm:top-24 sm:right-8 z-30 hidden">
-                    <div class="glass-hud p-4 rounded-xl shadow-[-24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[140px] sm:min-w-[200px] border border-blue-500/20">
+                <div id="hud-goal-card" class="absolute top-24 right-8 z-30 hidden">
+                    <div class="glass-hud p-4 rounded-xl shadow-[-24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px] border border-blue-500/20">
                         <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1" id="hud-goal-title">GOAL</p>
                         <h1 id="hud-goal-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">--</h1>
                     </div>
@@ -1194,21 +1191,21 @@
                 </div>
 
                 <!-- Active Buff Badges (bottom-right) -->
-                <div class="absolute bottom-4 right-3 sm:bottom-6 sm:right-6 z-30 flex flex-col items-end gap-2 pointer-events-none">
+                <div class="absolute bottom-6 right-6 z-30 flex flex-col items-end gap-2 pointer-events-none">
                     <div id="hud-buff-shield" class="buff-badge shield">
-                        <span style="font-size:clamp(11px, 2vw, 14px)">🛡️</span>
+                        <span style="font-size:14px">🛡️</span>
                         SHIELD
                         <span class="buff-timer">14s</span>
                     </div>
                     <div id="hud-buff-doublef" class="buff-badge doublef">
-                        <span style="font-size:clamp(11px, 2vw, 14px)">⚡</span>
+                        <span style="font-size:14px">⚡</span>
                         DOUBLE FIRE
                         <span class="buff-timer">12s</span>
                     </div>
                     <div id="hud-buff-bomb" class="buff-badge bomb">
-                        <span style="font-size:clamp(11px, 2vw, 14px)">💣</span>
+                        <span style="font-size:14px">💣</span>
                         BOMB
-                        <span style="font-size:clamp(7px, 1.2vw, 9px); opacity:0.7">TAP TO USE</span>
+                        <span style="font-size:9px; opacity:0.7">TAP TO USE</span>
                     </div>
                 </div>
             </main>
@@ -1227,7 +1224,7 @@
             </header>
 
             <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-6">
-                <div class="bg-surface-container-lowest rounded-xl p-5 sm:p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,89,187,0.04)] border border-white/50 w-full max-w-4xl space-y-12">
+                <div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,89,187,0.04)] border border-white/50 w-full max-w-4xl space-y-12">
                     <div class="space-y-8">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary">volume_up</span>
@@ -1318,7 +1315,7 @@
         <!-- REVIVE SCREEN -->
         <section id="revive-screen" class="screen hidden w-full h-full flex flex-col items-center justify-center p-6 relative z-50">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-            <div class="relative z-10 bg-surface-container-low border border-primary/30 p-5 sm:p-8 md:p-12 rounded-[2rem] w-full max-w-[90vw] sm:max-w-sm flex flex-col items-center text-center shadow-[0_0_60px_-15px_rgba(0,100,255,0.3)]">
+            <div class="relative z-10 bg-surface-container-low border border-primary/30 p-8 md:p-12 rounded-[2rem] w-full max-w-sm flex flex-col items-center text-center shadow-[0_0_60px_-15px_rgba(0,100,255,0.3)]">
                 <span class="material-symbols-outlined text-5xl text-primary animate-pulse mb-2">favorite</span>
                 <h2 class="text-3xl font-black tracking-tighter text-on-surface mb-2">CRITICAL DAMAGE</h2>
                 <p class="text-sm font-bold text-on-surface-variant uppercase tracking-widest mb-8">System Offline In: <span id="revive-timer" class="text-error text-xl ml-2">5</span></p>
@@ -1354,7 +1351,7 @@
 
                 <!-- Right Section: Central Game Over Card -->
                 <div class="md:col-span-7 flex justify-center">
-                    <div class="bg-surface-container-lowest w-full max-w-md rounded-[2rem] p-6 sm:p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)] flex flex-col gap-8 border border-white/50">
+                    <div class="bg-surface-container-lowest w-full max-w-md rounded-[2rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)] flex flex-col gap-8 border border-white/50">
                         <!-- Tactical Header -->
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
@@ -1368,7 +1365,7 @@
                         <div class="py-4">
                             <p id="game-over-score-label" class="text-[0.6875rem] font-bold text-outline tracking-[0.15em] mb-1">FINAL SCORE</p>
                             <div class="flex items-baseline gap-2">
-                                <span id="final-score-val" class="text-4xl sm:text-6xl font-black tracking-tighter text-on-surface">45,000</span>
+                                <span id="final-score-val" class="text-6xl font-black tracking-tighter text-on-surface">45,000</span>
                                 <span id="game-over-score-unit" class="text-primary font-bold">PTS</span>
                             </div>
                         </div>

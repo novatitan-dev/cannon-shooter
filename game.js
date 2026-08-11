@@ -4,11 +4,11 @@
  */
 
 class Bullet {
-    constructor(x, y, radius = 4, speed = 10) {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.speed = speed;
+        this.radius = 4;
+        this.speed = 10;
         this.active = true;
     }
 
@@ -27,7 +27,7 @@ class Bullet {
 }
 
 class Ball {
-    constructor(canvas, x, y, size, health, vx, scaleFactor = 1) {
+    constructor(canvas, x, y, size, health, vx) {
         this.canvas = canvas;
         this.x = x;
         this.y = y;
@@ -36,8 +36,7 @@ class Ball {
         this.health = health;
         this.vx = vx || (Math.random() - 0.5) * 4;
         this.vy = 0;
-        this.scaleFactor = scaleFactor;
-        this.gravity = 0.15 * scaleFactor;
+        this.gravity = 0.15;
         this.active = true;
         this.color = this.getRandomColor();
     }
@@ -77,7 +76,7 @@ class Ball {
         ctx.fillStyle = this.color;
         ctx.fill();
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = Math.max(1, 2 * this.scaleFactor);
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.closePath();
 
@@ -90,13 +89,12 @@ class Ball {
 }
 
 class ShieldDrop {
-    constructor(canvas, x, scaleFactor = 1) {
+    constructor(canvas, x) {
         this.canvas = canvas;
-        this.scaleFactor = scaleFactor;
         this.x = x;
-        this.y = -30 * scaleFactor;
-        this.radius = 25 * scaleFactor;
-        this.vy = 2 * scaleFactor; // Slow fall
+        this.y = -30;
+        this.radius = 25;
+        this.vy = 2; // Slow fall
         this.active = true;
         this.isOnGround = false;
         this.groundTime = 0;
@@ -125,7 +123,7 @@ class ShieldDrop {
         ctx.fillStyle = 'rgba(0, 150, 255, 0.4)';
         ctx.fill();
         ctx.strokeStyle = '#00bbff';
-        ctx.lineWidth = Math.max(1, 3 * this.scaleFactor);
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.closePath();
         
@@ -137,13 +135,12 @@ class ShieldDrop {
 }
 
 class DoubleFireDrop {
-    constructor(canvas, x, scaleFactor = 1) {
+    constructor(canvas, x) {
         this.canvas = canvas;
-        this.scaleFactor = scaleFactor;
         this.x = x;
-        this.y = -30 * scaleFactor;
-        this.radius = 25 * scaleFactor;
-        this.vy = 2.5 * scaleFactor; // Slightly faster fall
+        this.y = -30;
+        this.radius = 25;
+        this.vy = 2.5; // Slightly faster fall
         this.active = true;
         this.isOnGround = false;
         this.groundTime = 0;
@@ -172,7 +169,7 @@ class DoubleFireDrop {
         ctx.fillStyle = 'rgba(255, 165, 0, 0.4)';
         ctx.fill();
         ctx.strokeStyle = '#ffaa00';
-        ctx.lineWidth = Math.max(1, 3 * this.scaleFactor);
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.closePath();
         
@@ -184,13 +181,12 @@ class DoubleFireDrop {
 }
 
 class BombDrop {
-    constructor(canvas, x, scaleFactor = 1) {
+    constructor(canvas, x) {
         this.canvas = canvas;
-        this.scaleFactor = scaleFactor;
         this.x = x;
-        this.y = -30 * scaleFactor;
-        this.radius = 25 * scaleFactor;
-        this.vy = 2.2 * scaleFactor;
+        this.y = -30;
+        this.radius = 25;
+        this.vy = 2.2;
         this.active = true;
         this.isOnGround = false;
         this.groundTime = 0;
@@ -218,7 +214,7 @@ class BombDrop {
         ctx.fillStyle = 'rgba(255, 50, 50, 0.4)';
         ctx.fill();
         ctx.strokeStyle = '#ff3333';
-        ctx.lineWidth = Math.max(1, 3 * this.scaleFactor);
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.closePath();
 
@@ -235,7 +231,6 @@ class GameEngine {
         this.ctx = this.canvas.getContext('2d');
         this.cannonSprite = new Image();
         this.cannonSprite.src = 'cannon_sprite.png';
-        this.scaleFactor = 1;
         
         this.cannon = {
             x: 0,
@@ -498,11 +493,9 @@ class GameEngine {
         const rect = this.canvas.parentElement.getBoundingClientRect();
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
-        this.scaleFactor = Math.min(this.canvas.width / 1280, this.canvas.height / 720);
         this.cannon.x = this.canvas.width / 2 - this.cannon.width / 2;
-        this.cannon.y = this.canvas.height - this.cannon.height - 20 * this.scaleFactor;
+        this.cannon.y = this.canvas.height - this.cannon.height - 20;
         this.cannon.targetX = this.cannon.x;
-        this.keyMoveSpeed = 8 * this.scaleFactor;
     }
 
     handlePointerDown(e) {
@@ -607,18 +600,18 @@ class GameEngine {
 
         if (Math.random() > spawnThreshold) {
             // Difficulty scaling for size and health
-            const baseSize = (25 + (progress * 15)) * this.scaleFactor; // Starts smaller (25), grows to 40
-            const size = baseSize + Math.random() * 30 * this.scaleFactor;
+            const baseSize = 25 + (progress * 15); // Starts smaller (25), grows to 40
+            const size = baseSize + Math.random() * 30;
             
             // Health scales with progress: 3x-10x size initially, then more
             const healthMultiplier = 1 + (progress * 2); 
-            const health = Math.floor(((size / this.scaleFactor) / 5) * healthMultiplier);
+            const health = Math.floor((size / 5) * healthMultiplier);
             
             const xPos = Math.random() * this.canvas.width;
             // Add horizontal velocity for bounce-around effect
-            const vx = (Math.random() - 0.5) * (4 + progress * 4) * this.scaleFactor; 
+            const vx = (Math.random() - 0.5) * (4 + progress * 4); 
             
-            this.balls.push(new Ball(this.canvas, xPos, -size, size, health, vx, this.scaleFactor));
+            this.balls.push(new Ball(this.canvas, xPos, -size, size, health, vx));
         }
     }
 
@@ -627,8 +620,8 @@ class GameEngine {
         if (ball.maxHealth > 60) {
             const newSize = ball.size / 1.5;
             const newHealth = Math.ceil(ball.maxHealth / 2);
-            this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3 * this.scaleFactor, this.scaleFactor));
-            this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3 * this.scaleFactor, this.scaleFactor));
+            this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3));
+            this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3));
         }
     }
 
@@ -664,7 +657,7 @@ class GameEngine {
         // Ball vs Cannon (Circle-to-Rectangle collision)
         for (let ball of this.balls) {
             // Shrink cannon hitbox slightly, but leave a tiny bit of space
-            const padding = 10 * this.scaleFactor;
+            const padding = 10;
             const cx = this.cannon.x + padding;
             const cy = this.cannon.y + padding;
             const cw = this.cannon.width - (padding * 2);
@@ -807,7 +800,7 @@ class GameEngine {
 
     revivePlayer() {
         // Clear balls near the player to prevent instant death again
-        const safeRadius = 300 * this.scaleFactor;
+        const safeRadius = 300;
         this.balls = this.balls.filter(ball => {
             const dx = ball.x - this.cannon.x;
             const dy = ball.y - this.cannon.y;
@@ -832,7 +825,7 @@ class GameEngine {
                     y: ball.y,
                     vx: (Math.random() - 0.5) * 10,
                     vy: (Math.random() - 0.5) * 10,
-                    radius: (Math.random() * 6 + 3) * this.scaleFactor,
+                    radius: Math.random() * 6 + 3,
                     life: 1.0,
                     color: `hsl(${Math.random() * 60}, 100%, 50%)` // red-orange-yellow
                 });
@@ -918,9 +911,6 @@ class GameEngine {
         this.gameTimeMs = 0;
         this.lastUpdate = Date.now();
         this.difficulty = 1.0;
-        this.cannon.width = 80 * this.scaleFactor;
-        this.cannon.height = 80 * this.scaleFactor;
-        this.cannon.y = this.canvas.height - this.cannon.height - 20 * this.scaleFactor;
         this.balls = [];
         this.bullets = [];
         this.shieldDrops = [];
@@ -977,14 +967,12 @@ class GameEngine {
 
         // Auto fire
         if (this.isFiring && Date.now() - this.lastFireTime > this.fireRate) {
-            const bRadius = Math.max(2, 4 * this.scaleFactor);
-            const bSpeed = 10 * this.scaleFactor;
             if (this.cannon.isDoubleFire) {
-                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width * 0.25, this.cannon.y, bRadius, bSpeed));
-                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width * 0.75, this.cannon.y, bRadius, bSpeed));
+                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width * 0.25, this.cannon.y));
+                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width * 0.75, this.cannon.y));
                 this.totalShots += 2;
             } else {
-                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width / 2, this.cannon.y, bRadius, bSpeed));
+                this.bullets.push(new Bullet(this.cannon.x + this.cannon.width / 2, this.cannon.y));
                 this.totalShots++;
             }
             this.lastFireTime = Date.now();
@@ -994,8 +982,8 @@ class GameEngine {
         // Shield Logic
         if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastShieldTime > this.shieldInterval) {
-                const shieldX = Math.random() * (this.canvas.width - 50 * this.scaleFactor) + 25 * this.scaleFactor;
-                this.shieldDrops.push(new ShieldDrop(this.canvas, shieldX, this.scaleFactor));
+                const shieldX = Math.random() * (this.canvas.width - 50) + 25;
+                this.shieldDrops.push(new ShieldDrop(this.canvas, shieldX));
                 this.lastShieldTime = Date.now();
                 this.shieldInterval = Math.floor(Math.random() * 30000) + 90000; // 90 to 120 seconds
             }
@@ -1008,8 +996,8 @@ class GameEngine {
         // Double Fire Logic
         if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastDoubleFireTime > this.doubleFireInterval) {
-                const doubleX = Math.random() * (this.canvas.width - 50 * this.scaleFactor) + 25 * this.scaleFactor;
-                this.doubleFireDrops.push(new DoubleFireDrop(this.canvas, doubleX, this.scaleFactor));
+                const doubleX = Math.random() * (this.canvas.width - 50) + 25;
+                this.doubleFireDrops.push(new DoubleFireDrop(this.canvas, doubleX));
                 this.lastDoubleFireTime = Date.now();
                 this.doubleFireInterval = Math.floor(Math.random() * 30000) + 80000; // 80 to 110 seconds
             }
@@ -1022,8 +1010,8 @@ class GameEngine {
         // Bomb Drop Logic
         if (this.gameMode !== 'challenge' || this.activeChallengeId === 'time_attack') {
             if (Date.now() - this.lastBombTime > this.bombInterval) {
-                const bombX = Math.random() * (this.canvas.width - 50 * this.scaleFactor) + 25 * this.scaleFactor;
-                this.bombDrops.push(new BombDrop(this.canvas, bombX, this.scaleFactor));
+                const bombX = Math.random() * (this.canvas.width - 50) + 25;
+                this.bombDrops.push(new BombDrop(this.canvas, bombX));
                 this.lastBombTime = Date.now();
                 this.bombInterval = Math.floor(Math.random() * 30000) + 90000; // 90 to 120 seconds
             }
@@ -1109,7 +1097,7 @@ class GameEngine {
             // Dual barrel markers — two yellow dots showing where bullets come from
             [0.25, 0.75].forEach(frac => {
                 this.ctx.beginPath();
-                this.ctx.arc(this.cannon.x + this.cannon.width * frac, this.cannon.y + 6 * this.scaleFactor, 5 * this.scaleFactor, 0, Math.PI * 2);
+                this.ctx.arc(this.cannon.x + this.cannon.width * frac, this.cannon.y + 6, 5, 0, Math.PI * 2);
                 this.ctx.fillStyle = '#ffdd00';
                 this.ctx.fill();
                 this.ctx.strokeStyle = '#ff8800';

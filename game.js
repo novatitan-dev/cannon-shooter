@@ -232,11 +232,18 @@ class GameEngine {
         this.cannonSprite = new Image();
         this.cannonSprite.src = 'cannon_sprite.png';
         
+        const isAndroid = (typeof window !== 'undefined' && (
+            (window.Capacitor && (window.Capacitor.getPlatform?.() === 'android' || window.Capacitor.isNativePlatform?.())) ||
+            /Android/i.test(navigator.userAgent) ||
+            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth <= 768))
+        ));
+        const initialCannonSize = isAndroid ? 112 : 80;
+
         this.cannon = {
             x: 0,
             y: 0,
-            width: 80,
-            height: 80,
+            width: initialCannonSize,
+            height: initialCannonSize,
             targetX: 0
         };
 
@@ -493,6 +500,16 @@ class GameEngine {
         const rect = this.canvas.parentElement.getBoundingClientRect();
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
+
+        const isAndroid = (typeof window !== 'undefined' && (
+            (window.Capacitor && (window.Capacitor.getPlatform?.() === 'android' || window.Capacitor.isNativePlatform?.())) ||
+            /Android/i.test(navigator.userAgent) ||
+            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth <= 768))
+        ));
+        const cannonSize = isAndroid ? 112 : 80;
+        this.cannon.width = cannonSize;
+        this.cannon.height = cannonSize;
+
         this.cannon.x = this.canvas.width / 2 - this.cannon.width / 2;
         this.cannon.y = this.canvas.height - this.cannon.height - 20;
         this.cannon.targetX = this.cannon.x;

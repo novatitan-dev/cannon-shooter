@@ -452,11 +452,11 @@
         }
         @media (max-width: 640px) {
             .mode-card {
-                padding: 1rem !important;
-                border-radius: 1.25rem !important;
+                padding: 0.75rem !important;
+                border-radius: 1rem !important;
             }
             .mode-illustration-container {
-                padding: 0.5rem !important;
+                padding: 0.25rem !important;
             }
         }
         .dark .mode-card {
@@ -660,11 +660,11 @@
         /* ---- Mission Card Base (Glassmorphism) ---- */
         .mission-card {
             position: relative;
-            border-radius: 1.35rem;
-            padding: 1.25rem;
+            border-radius: 1.25rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 0.65rem;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
             background: rgba(15, 23, 42, 0.55);
@@ -675,17 +675,17 @@
         }
         @media (max-width: 640px) {
             .mission-card {
-                padding: 0.9rem !important;
-                gap: 0.65rem !important;
-                border-radius: 1.15rem !important;
+                padding: 0.7rem !important;
+                gap: 0.45rem !important;
+                border-radius: 0.95rem !important;
             }
             .mission-thumbnail {
-                padding: 0.35rem !important;
-                border-radius: 0.75rem !important;
+                padding: 0.2rem !important;
+                border-radius: 0.65rem !important;
             }
             .mission-btn {
-                padding: 10px 0 !important;
-                font-size: 13px !important;
+                padding: 8px 0 !important;
+                font-size: 12px !important;
             }
         }
         .mission-card:nth-child(1) { animation-delay: 0.1s; }
@@ -895,23 +895,23 @@
         </section>
 
         <!-- MODE SELECTION -->
-        <section id="mode-selection" class="screen hidden w-full h-full flex flex-col items-center justify-start sm:justify-center relative bg-background overflow-y-auto pt-14 sm:pt-0 pb-6">
-            <header class="fixed top-0 w-full z-50 px-6 py-3.5 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/30 dark:border-slate-800/40">
-                <div class="flex items-center gap-4">
-                    <button id="mode-back-btn" class="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
-                        <span class="material-symbols-outlined text-primary text-xl">arrow_back</span>
+        <section id="mode-selection" class="screen hidden w-full h-full flex flex-col items-center justify-start sm:justify-center relative bg-background overflow-y-auto pt-12 sm:pt-0 pb-4">
+            <header class="fixed top-0 w-full z-50 px-4 sm:px-6 py-2.5 sm:py-3.5 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/30 dark:border-slate-800/40">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <button id="mode-back-btn" class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
+                        <span class="material-symbols-outlined text-primary text-lg sm:text-xl">arrow_back</span>
                     </button>
-                    <span class="font-headline text-lg sm:text-xl md:text-2xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300">SELECT GAME MODE</span>
+                    <span class="font-headline text-base sm:text-xl md:text-2xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300">SELECT GAME MODE</span>
                 </div>
             </header>
 
-            <main class="relative z-10 w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-6 pt-4 sm:pt-16 my-auto">
+            <main class="relative z-10 w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 px-3 sm:px-4 pt-3 sm:pt-14 my-auto">
                 <!-- Classic Mode Card -->
-                <div class="mode-card p-4 sm:p-5 rounded-2xl sm:rounded-[1.75rem] shadow-xl flex flex-col justify-between">
-                    <div class="space-y-2.5 sm:space-y-3">
+                <div class="mode-card p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between">
+                    <div class="space-y-2">
                         <!-- Illustration Container -->
-                        <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden mode-illustration-container p-2 sm:p-3 flex items-center justify-center">
-                            <svg class="w-full h-20 sm:h-24" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div class="relative w-full rounded-lg sm:rounded-xl overflow-hidden mode-illustration-container p-1.5 sm:p-2 flex items-center justify-center">
+                            <svg class="w-full h-14 sm:h-16 md:h-20" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="100" cy="50" r="40" fill="url(#classic-glow)" class="animate-pulse-glow" />
                                 <g class="animate-float-ball">
                                     <circle cx="60" cy="30" r="10" fill="#ff5f5f" filter="drop-shadow(0 0 4px rgba(255,95,95,0.6))" />
@@ -937,11 +937,11 @@
                         </div>
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-xl sm:text-2xl font-black tracking-tight text-on-surface">Classic Mode</h3>
-                                <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Endurance Wave</p>
+                                <h3 class="text-base sm:text-xl font-black tracking-tight text-on-surface">Classic Mode</h3>
+                                <p class="text-[8px] sm:text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Endurance Wave</p>
                             </div>
                             <div class="flex flex-col items-end">
-                                <span class="text-[8px] sm:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                <span class="text-[7px] sm:text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
                                 <div class="flex text-amber-500">
                                     <span class="material-symbols-outlined text-xs sm:text-sm difficulty-star">star</span>
                                     <span class="material-symbols-outlined text-xs sm:text-sm difficulty-star">star</span>
@@ -952,24 +952,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3.5 sm:mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-2.5 sm:gap-3">
-                        <div id="classic-highscore-block" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                    <div class="mt-2.5 sm:mt-3 pt-2.5 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-2">
+                        <div id="classic-highscore-block" class="hidden flex justify-between items-center text-[11px] sm:text-xs font-bold text-on-surface-variant">
                             <span>PERSONAL BEST:</span>
-                            <span id="classic-highscore-val" class="text-primary font-black text-sm tracking-tight">--</span>
+                            <span id="classic-highscore-val" class="text-primary font-black text-xs sm:text-sm tracking-tight">--</span>
                         </div>
-                        <button id="launch-classic-btn" class="btn-animated-play w-full text-on-primary py-3 sm:py-3.5 px-5 rounded-xl font-bold tracking-widest text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                        <button id="launch-classic-btn" class="btn-animated-play w-full text-on-primary py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl font-bold tracking-widest text-[11px] sm:text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-1.5">
+                            <span class="material-symbols-outlined text-xs sm:text-sm">rocket_launch</span>
                             Launch Classic
                         </button>
                     </div>
                 </div>
 
                 <!-- Challenge Mode Card -->
-                <div class="mode-card p-4 sm:p-5 rounded-2xl sm:rounded-[1.75rem] shadow-xl flex flex-col justify-between">
-                    <div class="space-y-2.5 sm:space-y-3">
+                <div class="mode-card p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-xl flex flex-col justify-between">
+                    <div class="space-y-2">
                         <!-- Illustration Container -->
-                        <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden mode-illustration-container p-2 sm:p-3 flex items-center justify-center">
-                            <svg class="w-full h-20 sm:h-24" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div class="relative w-full rounded-lg sm:rounded-xl overflow-hidden mode-illustration-container p-1.5 sm:p-2 flex items-center justify-center">
+                            <svg class="w-full h-14 sm:h-16 md:h-20" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="100" cy="50" r="45" fill="url(#challenge-glow)" class="animate-pulse-glow" />
                                 <circle cx="100" cy="50" r="35" stroke="rgba(117,231,254,0.15)" stroke-width="1" stroke-dasharray="3 3" />
                                 <circle cx="100" cy="50" r="20" stroke="rgba(117,231,254,0.25)" stroke-width="1" />
@@ -991,11 +991,11 @@
                         </div>
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-xl sm:text-2xl font-black tracking-tight text-on-surface">Challenge Mode</h3>
-                                <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Precision Operations</p>
+                                <h3 class="text-base sm:text-xl font-black tracking-tight text-on-surface">Challenge Mode</h3>
+                                <p class="text-[8px] sm:text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Precision Operations</p>
                             </div>
                             <div class="flex flex-col items-end">
-                                <span class="text-[8px] sm:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
+                                <span class="text-[7px] sm:text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">Difficulty</span>
                                 <div class="flex text-amber-500">
                                     <span class="material-symbols-outlined text-xs sm:text-sm difficulty-star">star</span>
                                     <span class="material-symbols-outlined text-xs sm:text-sm difficulty-star">star</span>
@@ -1006,13 +1006,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3.5 sm:mt-4 pt-3 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-2.5 sm:gap-3">
-                        <div id="challenge-stats-block" class="hidden flex justify-between items-center text-xs font-bold text-on-surface-variant">
+                    <div class="mt-2.5 sm:mt-3 pt-2.5 border-t border-slate-200/30 dark:border-slate-800/50 flex flex-col gap-2">
+                        <div id="challenge-stats-block" class="hidden flex justify-between items-center text-[11px] sm:text-xs font-bold text-on-surface-variant">
                             <span>MISSIONS CLEARED:</span>
-                            <span id="challenge-cleared-val" class="text-emerald-500 font-black text-sm">0/2</span>
+                            <span id="challenge-cleared-val" class="text-emerald-500 font-black text-xs sm:text-sm">0/2</span>
                         </div>
-                        <button id="select-challenges-btn" class="btn-animated-play w-full text-on-primary py-3 sm:py-3.5 px-5 rounded-xl font-bold tracking-widest text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #006877 0%, #008fa5 100%);">
-                            <span class="material-symbols-outlined text-sm">list_alt</span>
+                        <button id="select-challenges-btn" class="btn-animated-play w-full text-on-primary py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl font-bold tracking-widest text-[11px] sm:text-xs uppercase active:translate-y-0.5 flex items-center justify-center gap-1.5" style="background: linear-gradient(135deg, #006877 0%, #008fa5 100%);">
+                            <span class="material-symbols-outlined text-xs sm:text-sm">list_alt</span>
                             Select Mission
                         </button>
                     </div>
@@ -1051,13 +1051,13 @@
             </header>
 
             <!-- Cards Grid -->
-            <main class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-20 sm:pb-24">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <main class="relative z-10 w-full max-w-2xl mx-auto px-3 sm:px-4 pt-3 sm:pt-4 pb-16">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
 
                     <!-- ═══ OPERATION BLITZ (BLUE) ═══ -->
                     <div class="mission-card mission-card-time-attack">
                         <div class="mission-thumbnail mission-thumbnail-blue">
-                            <svg class="w-full h-20 sm:h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-full h-14 sm:h-16 md:h-20" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="120" cy="50" r="45" fill="url(#time-glow)" opacity="0.6" />
                                 <defs><radialGradient id="time-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4" /><stop offset="100%" stop-color="#0284c7" stop-opacity="0" /></radialGradient></defs>
                                 <line x1="30" y1="35" x2="65" y2="35" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
@@ -1077,27 +1077,27 @@
                                 <text x="120" y="65" text-anchor="middle" fill="#75e7fe" font-size="8" font-weight="900" font-family="monospace">00:30</text>
                             </svg>
                         </div>
-                        <div class="flex items-start justify-between gap-2.5">
-                            <div class="flex items-center gap-2.5">
-                                <div class="mission-icon w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-cyan-500/15 border border-cyan-400/25 flex items-center justify-center text-cyan-400 shrink-0" style="box-shadow:0 0 16px rgba(56,189,248,0.2);">
-                                    <span class="material-symbols-outlined text-xl sm:text-2xl">timer</span>
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <div class="mission-icon w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-cyan-500/15 border border-cyan-400/25 flex items-center justify-center text-cyan-400 shrink-0" style="box-shadow:0 0 12px rgba(56,189,248,0.2);">
+                                    <span class="material-symbols-outlined text-lg sm:text-xl">timer</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-base sm:text-xl font-black text-white tracking-tight leading-tight">Operation Blitz</h3>
+                                    <h3 class="text-sm sm:text-base font-black text-white tracking-tight leading-tight">Operation Blitz</h3>
                                     <span class="mission-badge badge-type bg-cyan-500/10 text-cyan-300 border border-cyan-400/25 mt-0.5">⏱ Time Attack</span>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end gap-0.5 pt-0.5">
                                 <div class="flex gap-0.5" title="Difficulty: 2/5">
-                                    <span class="star-filled text-sm sm:text-base">★</span><span class="star-filled text-sm sm:text-base">★</span><span class="star-empty text-sm sm:text-base">★</span><span class="star-empty text-sm sm:text-base">★</span><span class="star-empty text-sm sm:text-base">★</span>
+                                    <span class="star-filled text-xs sm:text-sm">★</span><span class="star-filled text-xs sm:text-sm">★</span><span class="star-empty text-xs sm:text-sm">★</span><span class="star-empty text-xs sm:text-sm">★</span><span class="star-empty text-xs sm:text-sm">★</span>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-xs sm:text-sm text-slate-300 leading-snug sm:leading-relaxed">Clear 30 bouncing spheres as fast as possible. Absolute efficiency and speed required.</p>
-                        <div class="flex flex-wrap gap-1.5">
+                        <p class="text-[11px] sm:text-xs text-slate-300 leading-tight">Clear 30 bouncing spheres as fast as possible. Absolute speed required.</p>
+                        <div class="flex flex-wrap gap-1">
                             <span id="status-badge-time-attack" class="mission-badge badge-cleared hidden">✔ Cleared</span>
                         </div>
-                        <div id="record-block-time-attack" class="hidden flex justify-between items-center text-xs sm:text-sm font-bold text-slate-300 bg-white/5 rounded-xl px-3.5 py-2">
+                        <div id="record-block-time-attack" class="hidden flex justify-between items-center text-[11px] sm:text-xs font-bold text-slate-300 bg-white/5 rounded-lg px-2.5 py-1.5">
                             <span>🏆 Best Record</span>
                             <span id="record-time-attack" class="text-cyan-400 font-black">--</span>
                         </div>
@@ -1109,7 +1109,7 @@
                     <!-- ═══ OPERATION IRON DOME (GRAY) ═══ -->
                     <div class="mission-card mission-card-iron-dome">
                         <div class="mission-thumbnail mission-thumbnail-gray">
-                            <svg class="w-full h-20 sm:h-28" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-full h-14 sm:h-16 md:h-20" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="120" cy="65" r="45" fill="url(#dome-glow)" opacity="0.5" />
                                 <defs><radialGradient id="dome-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#94a3b8" stop-opacity="0.4" /><stop offset="100%" stop-color="#334155" stop-opacity="0" /></radialGradient></defs>
                                 <line x1="40" y1="82" x2="200" y2="82" stroke="#475569" stroke-width="2" stroke-linecap="round" />
@@ -1126,29 +1126,29 @@
                                 <g><circle cx="185" cy="35" r="4" fill="#ef4444" /><path d="M 185 35 Q 165 48 155 62" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2" /><circle cx="155" cy="62" r="3" fill="#facc15" class="animate-ping" /></g>
                             </svg>
                         </div>
-                        <div class="flex items-start justify-between gap-2.5">
-                            <div class="flex items-center gap-2.5">
-                                <div class="mission-icon w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-slate-500/15 border border-slate-400/25 flex items-center justify-center text-slate-300 shrink-0" style="box-shadow:0 0 16px rgba(148,163,184,0.15);">
-                                    <span class="material-symbols-outlined text-xl sm:text-2xl">shield</span>
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <div class="mission-icon w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-500/15 border border-slate-400/25 flex items-center justify-center text-slate-300 shrink-0" style="box-shadow:0 0 12px rgba(148,163,184,0.15);">
+                                    <span class="material-symbols-outlined text-lg sm:text-xl">shield</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-base sm:text-xl font-black text-white tracking-tight leading-tight">Operation Iron Dome</h3>
+                                    <h3 class="text-sm sm:text-base font-black text-white tracking-tight leading-tight">Operation Iron Dome</h3>
                                     <span class="mission-badge badge-type bg-slate-500/10 text-slate-300 border border-slate-400/25 mt-0.5">🛡 Survival</span>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end gap-0.5 pt-0.5">
                                 <div class="flex gap-0.5" title="Difficulty: 4/5">
-                                    <span class="star-filled text-sm sm:text-base">★</span><span class="star-filled text-sm sm:text-base">★</span><span class="star-filled text-sm sm:text-base">★</span><span class="star-filled text-sm sm:text-base">★</span><span class="star-empty text-sm sm:text-base">★</span>
+                                    <span class="star-filled text-xs sm:text-sm">★</span><span class="star-filled text-xs sm:text-sm">★</span><span class="star-filled text-xs sm:text-sm">★</span><span class="star-filled text-xs sm:text-sm">★</span><span class="star-empty text-xs sm:text-sm">★</span>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-xs sm:text-sm text-slate-300 leading-snug sm:leading-relaxed">Survive 60s against rapid spawns. Power-ups disabled. No revives.</p>
-                        <div class="flex flex-wrap gap-1.5">
+                        <p class="text-[11px] sm:text-xs text-slate-300 leading-tight">Survive 60s against rapid spawns. Power-ups disabled. No revives.</p>
+                        <div class="flex flex-wrap gap-1">
                             <span class="mission-badge badge-hard">⚠ Hard</span>
                             <span class="mission-badge bg-rose-500/10 text-rose-400 border border-rose-500/25">🚫 No Power-ups</span>
                             <span id="status-badge-iron-dome" class="mission-badge badge-cleared hidden">✔ Cleared</span>
                         </div>
-                        <div id="record-block-iron-dome" class="hidden flex justify-between items-center text-xs sm:text-sm font-bold text-slate-300 bg-white/5 rounded-xl px-3.5 py-2">
+                        <div id="record-block-iron-dome" class="hidden flex justify-between items-center text-[11px] sm:text-xs font-bold text-slate-300 bg-white/5 rounded-lg px-2.5 py-1.5">
                             <span>📊 Status</span>
                             <span id="record-iron-dome" class="text-slate-300 font-black">Not Cleared</span>
                         </div>

@@ -9,13 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Screen Elements
     const screens = {
         mainMenu: document.getElementById('main-menu'),
-        modeSelection: document.getElementById('mode-selection'),
-        challengeSelection: document.getElementById('challenge-selection'),
         gameHUD: document.getElementById('game-hud'),
         settingsScreen: document.getElementById('settings-screen'),
-
         reviveScreen: document.getElementById('revive-screen'),
         gameOverScreen: document.getElementById('game-over-screen')
+    };
+
+    // Modal Popups
+    const popups = {
+        mode: document.getElementById('mode-selection'),
+        challenge: document.getElementById('challenge-selection')
     };
 
     // Buttons
@@ -38,8 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
         bgDaylight: document.getElementById('bg-daylight-btn'),
         bgDark: document.getElementById('bg-dark-btn'),
 
-        modeBack: document.getElementById('mode-back-btn'),
+        modeClose: document.getElementById('mode-close-btn'),
         challengeBack: document.getElementById('challenge-back-btn'),
+        challengeClose: document.getElementById('challenge-close-btn'),
         launchClassic: document.getElementById('launch-classic-btn'),
         selectChallenges: document.getElementById('select-challenges-btn'),
         launchTimeAttack: document.getElementById('launch-challenge-time-attack'),
@@ -226,12 +230,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Toggle body scroll override for challenge screen
-        if (targetScreen === screens.challengeSelection) {
-            document.body.classList.add('challenge-open');
-        } else {
-            document.body.classList.remove('challenge-open');
+    }
+
+    // --- MODAL POPUP CONTROLLERS ---
+
+    function openModePopup() {
+        updateModeSelectionUI();
+        if (popups.challenge) popups.challenge.classList.remove('active');
+        if (popups.mode) popups.mode.classList.add('active');
+    }
+
+    function closeModePopup() {
+        if (popups.mode) popups.mode.classList.remove('active');
+    }
+
+    function openChallengePopup() {
+        updateChallengeSelectionUI();
+        if (popups.mode) popups.mode.classList.remove('active');
+        if (popups.challenge) {
+            popups.challenge.classList.add('active');
+            popups.challenge.scrollTop = 0;
         }
+    }
+
+    function closeChallengePopup() {
+        if (popups.challenge) popups.challenge.classList.remove('active');
+    }
+
+    function closeAllGamePopups() {
+        closeModePopup();
+        closeChallengePopup();
     }
 
     // --- MAIN NAVIGATION LISTENERS ---
@@ -272,25 +300,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (buttons.play) {
         buttons.play.onclick = () => {
-            console.log('Event: Play Clicked -> Show Mode Selection');
-            updateModeSelectionUI();
-            showScreen(screens.modeSelection);
+            console.log('Event: Play Clicked -> Open Mode Selection Popup');
+            openModePopup();
         };
     }
 
-    if (buttons.modeBack) {
-        buttons.modeBack.onclick = () => {
-            showScreen(screens.mainMenu);
+    if (buttons.modeClose) {
+        buttons.modeClose.onclick = () => {
+            closeModePopup();
         };
+    }
+
+    if (popups.mode) {
+        popups.mode.addEventListener('click', (e) => {
+            if (e.target === popups.mode) closeModePopup();
+        });
     }
 
     if (buttons.challengeBack) {
         buttons.challengeBack.onclick = () => {
-            showScreen(screens.modeSelection);
+            closeChallengePopup();
+            openModePopup();
         };
     }
 
+    if (buttons.challengeClose) {
+        buttons.challengeClose.onclick = () => {
+            closeChallengePopup();
+        };
+    }
+
+    if (popups.challenge) {
+        popups.challenge.addEventListener('click', (e) => {
+            if (e.target === popups.challenge) closeChallengePopup();
+        });
+    }
+
     function launchClassicGame() {
+        closeAllGamePopups();
         resetGameState('classic');
         showScreen(screens.gameHUD);
         setTimeout(() => {
@@ -299,8 +346,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (buttons.launchClassic) {
-        buttons.launchClassic.onclick = () => {
+        buttons.launchClassic.onclick = (e) => {
+            e.stopPropagation();
             console.log('Event: Launch Classic Clicked');
+            launchClassicGame();
+        };
+    }
+
+    const classicModeCard = document.getElementById('classic-mode-card');
+    if (classicModeCard) {
+        classicModeCard.onclick = () => {
             launchClassicGame();
         };
     }
@@ -342,12 +397,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (buttons.selectChallenges) {
-        buttons.selectChallenges.onclick = () => {
+        buttons.selectChallenges.onclick = (e) => {
+            e.stopPropagation();
             console.log('Event: Select Challenges Clicked');
-            updateChallengeSelectionUI();
-            showScreen(screens.challengeSelection);
-            // Scroll to top when opening
-            if (screens.challengeSelection) screens.challengeSelection.scrollTop = 0;
+            openChallengePopup();
+        };
+    }
+
+    const challengeModeCard = document.getElementById('challenge-mode-card');
+    if (challengeModeCard) {
+        challengeModeCard.onclick = () => {
+            openChallengePopup();
         };
     }
 
@@ -368,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startChallenge(challengeId) {
         console.log(`Event: Launch Challenge ${challengeId}`);
+        closeAllGamePopups();
         resetGameState('challenge', challengeId);
         showScreen(screens.gameHUD);
         setTimeout(() => {
@@ -376,10 +437,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (buttons.launchTimeAttack) {
-        buttons.launchTimeAttack.onclick = () => startChallenge('time_attack');
+        buttons.launchTimeAttack.onclick = (e) => {
+            e.stopPropagation();
+            startChallenge('time_attack');
+        };
     }
+    const blitzMissionCard = document.getElementById('blitz-mission-card');
+    if (blitzMissionCard) {
+        blitzMissionCard.onclick = () => {
+            startChallenge('time_attack');
+        };
+    }
+
     if (buttons.launchIronDome) {
-        buttons.launchIronDome.onclick = () => startChallenge('iron_dome');
+        buttons.launchIronDome.onclick = (e) => {
+            e.stopPropagation();
+            startChallenge('iron_dome');
+        };
+    }
+    const ironDomeMissionCard = document.getElementById('iron-dome-mission-card');
+    if (ironDomeMissionCard) {
+        ironDomeMissionCard.onclick = () => {
+            startChallenge('iron_dome');
+        };
     }
 
 

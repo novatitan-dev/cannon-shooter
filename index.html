@@ -1165,7 +1165,11 @@
         <section id="game-hud" class="screen hidden w-full h-full flex flex-col items-center justify-center relative selection:bg-primary/20">
             <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl">
                 <div class="flex items-center gap-3">
-                    <span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-400">CANNON SHOOTER</span>
+                    <!-- Score Box Header -->
+                    <div class="glass-hud px-4 py-2 rounded-xl border border-blue-500/20 flex items-center gap-3">
+                        <span class="text-xs font-bold tracking-[0.15em] text-primary uppercase">SCORE</span>
+                        <span id="score-val" class="text-xl font-extrabold tracking-tighter text-on-surface">000,000</span>
+                    </div>
                 </div>
                 <div class="flex items-center gap-4">
                     <button id="pause-btn" class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors p-2 rounded-lg cursor-pointer">pause</button>
@@ -1174,15 +1178,6 @@
             </header>
 
             <main class="relative w-full h-full flex items-center justify-center p-8 overflow-hidden">
-
-
-                <!-- Score Card (Left) -->
-                <div class="absolute top-24 left-8 z-30">
-                    <div class="glass-hud p-4 rounded-xl shadow-[24px_0_24px_-12px_rgba(0,89,187,0.04)] min-w-[200px]">
-                        <p class="text-xs font-bold tracking-[0.15em] text-primary uppercase mb-1">SCORE</p>
-                        <h1 id="score-val" class="text-2xl font-extrabold tracking-tighter text-on-surface">000,000</h1>
-                    </div>
-                </div>
 
                 <!-- Challenge Goal Card (Right) -->
                 <div id="hud-goal-card" class="absolute top-24 right-8 z-30 hidden">

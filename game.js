@@ -12,8 +12,8 @@ class Bullet {
         this.active = true;
     }
 
-    update() {
-        this.y -= this.speed;
+    update(dt) {
+        this.y -= this.speed * dt;
         if (this.y < 0) this.active = false;
     }
 
@@ -46,10 +46,10 @@ class Ball {
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    update() {
-        this.vy += this.gravity;
-        this.x += this.vx;
-        this.y += this.vy;
+    update(dt) {
+        this.vy += this.gravity * dt;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
 
         // Ground collision: Reset velocity for perpetual bounce
         if (this.y + this.size > this.canvas.height) {
@@ -100,9 +100,9 @@ class ShieldDrop {
         this.groundTime = 0;
     }
 
-    update() {
+    update(dt) {
         if (!this.isOnGround) {
-            this.y += this.vy;
+            this.y += this.vy * dt;
             if (this.y + this.radius >= this.canvas.height) {
                 this.y = this.canvas.height - this.radius;
                 this.isOnGround = true;
@@ -146,9 +146,9 @@ class DoubleFireDrop {
         this.groundTime = 0;
     }
 
-    update() {
+    update(dt) {
         if (!this.isOnGround) {
-            this.y += this.vy;
+            this.y += this.vy * dt;
             if (this.y + this.radius >= this.canvas.height) {
                 this.y = this.canvas.height - this.radius;
                 this.isOnGround = true;
@@ -192,9 +192,9 @@ class BombDrop {
         this.groundTime = 0;
     }
 
-    update() {
+    update(dt) {
         if (!this.isOnGround) {
-            this.y += this.vy;
+            this.y += this.vy * dt;
             if (this.y + this.radius >= this.canvas.height) {
                 this.y = this.canvas.height - this.radius;
                 this.isOnGround = true;
@@ -956,28 +956,32 @@ class GameEngine {
 
     loop() {
         const now = Date.now();
+        // Delta time normalized so that dt=1.0 at 60fps (~16.67ms per frame).
+        // Capped at 3 to prevent huge jumps when app is backgrounded/tabbed out.
+        const dt = Math.min((now - (this.lastUpdate || now)) / 16.667, 3);
         if (this.isRunning && !this.isPaused) {
             if (this.lastUpdate > 0) {
                 this.gameTimeMs += (now - this.lastUpdate);
             }
-            this.update();
+            this.update(dt);
             this.draw();
         }
         this.lastUpdate = now;
         requestAnimationFrame(() => this.loop());
     }
 
-    update() {
+    update(dt) {
         // Keyboard-driven movement (A/D, Arrow Keys)
         if (this.keysPressed.has('left')) {
-            this.cannon.targetX = Math.max(0, this.cannon.targetX - this.keyMoveSpeed);
+            this.cannon.targetX = Math.max(0, this.cannon.targetX - this.keyMoveSpeed * dt);
         }
         if (this.keysPressed.has('right')) {
-            this.cannon.targetX = Math.min(this.canvas.width - this.cannon.width, this.cannon.targetX + this.keyMoveSpeed);
+            this.cannon.targetX = Math.min(this.canvas.width - this.cannon.width, this.cannon.targetX + this.keyMoveSpeed * dt);
         }
 
-        // Cannon smooth movement with NaN safety
-        const dx = (this.cannon.targetX - this.cannon.x) * 0.2;
+        // Cannon smooth movement with NaN safety (frame-rate independent lerp)
+        const lerpFactor = 1 - Math.pow(0.8, dt);
+        const dx = (this.cannon.targetX - this.cannon.x) * lerpFactor;
         if (!isNaN(dx)) {
             this.cannon.x += dx;
         }
@@ -1036,18 +1040,18 @@ class GameEngine {
 
         // Update explosion particles
         this.bombExplosionParticles = this.bombExplosionParticles.filter(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= 0.03;
-            p.radius *= 0.97;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= 0.03 * dt;
+            p.radius *= Math.pow(0.97, dt);
             return p.life > 0;
         });
 
-        this.bullets.forEach(b => b.update());
-        this.balls.forEach(b => b.update());
-        this.shieldDrops.forEach(s => s.update());
-        this.doubleFireDrops.forEach(d => d.update());
-        this.bombDrops.forEach(b => b.update());
+        this.bullets.forEach(b => b.update(dt));
+        this.balls.forEach(b => b.update(dt));
+        this.shieldDrops.forEach(s => s.update(dt));
+        this.doubleFireDrops.forEach(d => d.update(dt));
+        this.bombDrops.forEach(b => b.update(dt));
         
         this.spawnBall();
         this.checkCollisions();

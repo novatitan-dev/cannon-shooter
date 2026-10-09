@@ -237,7 +237,7 @@ class GameEngine {
             /Android/i.test(navigator.userAgent) ||
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth <= 768))
         ));
-        const initialCannonSize = isAndroid ? 112 : 80;
+        const initialCannonSize = isAndroid ? 112 : 115;
 
         this.cannon = {
             x: 0,
@@ -506,7 +506,7 @@ class GameEngine {
             /Android/i.test(navigator.userAgent) ||
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth <= 768))
         ));
-        const cannonSize = isAndroid ? 112 : 80;
+        const cannonSize = isAndroid ? 112 : 115;
         this.cannon.width = cannonSize;
         this.cannon.height = cannonSize;
 

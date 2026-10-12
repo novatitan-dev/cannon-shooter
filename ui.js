@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.adMobInstance) return;
         try {
             await state.adMobInstance.showBanner({
-                adId: 'ca-app-pub-6602754762079317/8736409171',
+                adId: 'ca-app-pub-6602754762079317/9557651115',
                 adSize: 'BANNER',
                 position: 'BOTTOM_CENTER',
                 margin: 0,
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.adReady = false;
         try {
             await state.adMobInstance.prepareRewardVideoAd({
-                adId: 'ca-app-pub-6602754762079317/6712881063', // Your Production ID
+                adId: 'ca-app-pub-6602754762079317/2098972657', // Your Production ID
                 isTesting: false
             });
         } catch (e) {

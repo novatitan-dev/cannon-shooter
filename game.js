@@ -8,7 +8,7 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.radius = 4;
-        this.speed = 10;
+        this.speed = 14;
         this.active = true;
     }
 
@@ -27,7 +27,7 @@ class Bullet {
 }
 
 class Ball {
-    constructor(canvas, x, y, size, health, vx) {
+    constructor(canvas, x, y, size, health, vx, vy) {
         this.canvas = canvas;
         this.x = x;
         this.y = y;
@@ -35,8 +35,8 @@ class Ball {
         this.maxHealth = health;
         this.health = health;
         this.vx = vx || (Math.random() - 0.5) * 4;
-        this.vy = 0;
-        this.gravity = 0.15;
+        this.vy = vy !== undefined ? vy : 2.5; // Starts with downward momentum
+        this.gravity = 0.35; // Snappy, arcade-paced gravity (was 0.15)
         this.active = true;
         this.color = this.getRandomColor();
     }
@@ -51,13 +51,12 @@ class Ball {
         this.x += this.vx * dt;
         this.y += this.vy * dt;
 
-        // Ground collision: Reset velocity for perpetual bounce
+        // Ground collision: Perpetual energetic bounce
         if (this.y + this.size > this.canvas.height) {
             this.y = this.canvas.height - this.size;
-            // Calculate velocity needed to reach the top of the screen (y = 0)
-            // v = sqrt(2 * gravity * distance)
-            const distance = this.canvas.height - this.size;
-            this.vy = -Math.sqrt(2 * this.gravity * distance);
+            // Bounce up to ~78% of screen height so balls cycle quickly and don't linger at ceiling
+            const bounceHeight = (this.canvas.height - this.size) * 0.78;
+            this.vy = -Math.sqrt(2 * this.gravity * bounceHeight);
         }
 
         // Wall collision
@@ -637,8 +636,8 @@ class GameEngine {
         if (ball.maxHealth > 60) {
             const newSize = ball.size / 1.5;
             const newHealth = Math.ceil(ball.maxHealth / 2);
-            this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3));
-            this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3));
+            this.balls.push(new Ball(this.canvas, ball.x - newSize, ball.y, newSize, newHealth, -3.5, -3));
+            this.balls.push(new Ball(this.canvas, ball.x + newSize, ball.y, newSize, newHealth, 3.5, -3));
         }
     }
 

@@ -670,14 +670,14 @@ class GameEngine {
             }
         }
 
-        // Ball vs Cannon (Circle-to-Rectangle collision)
+        // Ball vs Cannon (Circle-to-Rectangle collision fitted to visible sprite)
         for (let ball of this.balls) {
-            // Shrink cannon hitbox slightly, but leave a tiny bit of space
-            const padding = 10;
-            const cx = this.cannon.x + padding;
-            const cy = this.cannon.y + padding;
-            const cw = this.cannon.width - (padding * 2);
-            const ch = this.cannon.height - (padding * 2);
+            // cannon_sprite.png has ~31% transparent top and ~18% side margins.
+            // Fit the hitbox tightly to the visible cannon artwork:
+            const cx = this.cannon.x + (this.cannon.width * 0.20);
+            const cy = this.cannon.y + (this.cannon.height * 0.33);
+            const cw = this.cannon.width * 0.60;
+            const ch = this.cannon.height * 0.48;
 
             const closestX = Math.max(cx, Math.min(ball.x, cx + cw));
             const closestY = Math.max(cy, Math.min(ball.y, cy + ch));

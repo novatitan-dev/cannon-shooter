@@ -1,6 +1,6 @@
 {
   "name": "cannon-shooter",
-  "productName": "Canon Shooter",
+  "productName": "Cannon Shooter",
   "version": "1.0.0",
   "description": "Tactical Cannon Shooter Game",
   "main": "main.js",

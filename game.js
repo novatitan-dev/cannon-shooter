@@ -887,18 +887,31 @@ class GameEngine {
     }
 
     revivePlayer() {
-        // Clear balls near the player to prevent instant death again
-        const safeRadius = 300;
+        // Clear balls near the cannon center to prevent instant collision upon respawn
+        const safeRadius = 350;
+        const cannonCenterX = this.cannon.x + this.cannon.width / 2;
+        const cannonCenterY = this.cannon.y + this.cannon.height / 2;
         this.balls = this.balls.filter(ball => {
-            const dx = ball.x - this.cannon.x;
-            const dy = ball.y - this.cannon.y;
+            const dx = ball.x - cannonCenterX;
+            const dy = ball.y - cannonCenterY;
             return Math.sqrt(dx * dx + dy * dy) > safeRadius;
         });
 
-        // Resume game loop
+        // Grant 3-second invulnerability shield so any falling balls explode safely
+        this.cannon.isShielded = true;
+        this.cannon.shieldEndTime = Date.now() + 3000;
+
+        // Reset input and frame timers so physics resumes smoothly without time jumps
+        this.isFiring = false;
         this.isRunning = true;
+        this.isPaused = false;
         this._lastFrameTime = performance.now();
         this._smoothDt = 1.0;
+
+        // Resume audio context if suspended while viewing the ad
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume().catch(() => {});
+        }
     }
 
     /** Use the bomb power-up: destroy all balls on screen with a big explosion. */

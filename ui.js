@@ -137,7 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
         lastChallengeId: null
     };
 
-    // --- ADMOB INITIALIZATION ---
+    // --- ADMOB CONFIGURATION & STATE ---
+    let isBannerVisible = false;
+    let isBannerCreated = false;
+    let rewardEarned = false;
+    let isWatchingReviveAd = false;
+
     async function initAdMob() {
         try {
             if (window.Capacitor && window.Capacitor.Plugins.AdMob) {
@@ -150,15 +155,48 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.adReady = true;
                 });
 
-                state.adMobInstance.addListener('onRewardedVideoAdDismissed', () => {
-                    console.log('Reward Ad Dismissed');
-                    // If dismissed without reward, trigger standard game over
-                    if (!state.hasRevived) endGame(window.Game ? window.Game.getStats() : {});
+                state.adMobInstance.addListener('onRewardedVideoAdFailedToLoad', (err) => {
+                    console.warn('Reward Ad Failed to Load:', err);
+                    state.adReady = false;
                 });
 
-                // Load the first ads
+                state.adMobInstance.addListener('onRewardedVideoAdReward', (reward) => {
+                    console.log('Reward Ad Earned:', reward);
+                    rewardEarned = true;
+                    doRevive();
+                });
+
+                state.adMobInstance.addListener('onRewardedVideoAdDismissed', () => {
+                    console.log('Reward Ad Dismissed. rewardEarned:', rewardEarned, 'isWatchingReviveAd:', isWatchingReviveAd);
+                    if (isWatchingReviveAd) {
+                        isWatchingReviveAd = false;
+                        if (rewardEarned) {
+                            doRevive();
+                        } else {
+                            console.log('Ad dismissed without completion -> Game Over');
+                            endGame(window.Game ? window.Game.getStats() : {});
+                        }
+                    }
+                    // Preload next reward video ad
+                    loadRewardAd();
+                });
+
+                state.adMobInstance.addListener('onRewardedVideoAdFailedToShow', (err) => {
+                    console.warn('Reward Ad Failed to Show:', err);
+                    if (isWatchingReviveAd) {
+                        isWatchingReviveAd = false;
+                        endGame(window.Game ? window.Game.getStats() : {});
+                    }
+                });
+
+                // Load initial reward ad
                 loadRewardAd();
-                showBannerAd();
+
+                // Show banner only if player is currently on the main menu screen
+                const mainMenu = screens.mainMenu || document.getElementById('main-menu');
+                if (mainMenu && !mainMenu.classList.contains('hidden')) {
+                    showBannerAd();
+                }
             }
         } catch (e) {
             console.warn('AdMob not available or failed to init:', e);
@@ -167,29 +205,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function showBannerAd() {
         if (!state.adMobInstance) return;
+        if (isBannerVisible) return;
         try {
-            await state.adMobInstance.showBanner({
-                adId: 'ca-app-pub-6602754762079317/9557651115',
-                adSize: 'BANNER',
-                position: 'BOTTOM_CENTER',
-                margin: 0,
-                isTesting: false
-            });
+            if (isBannerCreated) {
+                await state.adMobInstance.resumeBanner();
+                isBannerVisible = true;
+                console.log('Banner Ad Resumed on Main Home Screen');
+            } else {
+                await state.adMobInstance.showBanner({
+                    adId: 'ca-app-pub-6602754762079317/9557651115',
+                    adSize: 'BANNER',
+                    position: 'BOTTOM_CENTER',
+                    margin: 0,
+                    isTesting: false
+                });
+                isBannerCreated = true;
+                isBannerVisible = true;
+                console.log('Banner Ad Displayed on Main Home Screen');
+            }
         } catch (e) {
-            console.error('Failed to show Banner Ad', e);
+            console.warn('showBannerAd failed, trying direct showBanner fallback:', e);
+            try {
+                await state.adMobInstance.showBanner({
+                    adId: 'ca-app-pub-6602754762079317/9557651115',
+                    adSize: 'BANNER',
+                    position: 'BOTTOM_CENTER',
+                    margin: 0,
+                    isTesting: false
+                });
+                isBannerCreated = true;
+                isBannerVisible = true;
+            } catch (err) {
+                console.error('Failed to show Banner Ad', err);
+            }
+        }
+    }
+
+    async function hideBannerAd() {
+        if (!state.adMobInstance) return;
+        if (!isBannerVisible && !isBannerCreated) return;
+        try {
+            await state.adMobInstance.hideBanner();
+            isBannerVisible = false;
+            console.log('Banner Ad Hidden');
+        } catch (e) {
+            console.warn('Failed to hide Banner Ad', e);
         }
     }
 
     async function loadRewardAd() {
         if (!state.adMobInstance) return;
-        state.adReady = false;
         try {
             await state.adMobInstance.prepareRewardVideoAd({
                 adId: 'ca-app-pub-6602754762079317/2098972657', // Your Production ID
                 isTesting: false
             });
+            state.adReady = true;
+            console.log('Reward Ad Prepared');
         } catch (e) {
-            console.error('Failed to load Reward Ad', e);
+            console.warn('Failed to load Reward Ad', e);
+            state.adReady = false;
         }
     }
 
@@ -230,6 +305,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Banner Ad Policy: Only show on main home screen, hide on all other screens (gameplay, revive, game over)
+        if (targetScreen === screens.mainMenu) {
+            showBannerAd();
+        } else {
+            hideBannerAd();
+        }
     }
 
     // --- MODAL POPUP CONTROLLERS ---
@@ -465,7 +546,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- REVIVE LOGIC ---
     let reviveTimerInterval;
+
+    function doRevive() {
+        if (state.hasRevived) return; // Prevent duplicate revive triggers
+        console.log('Reviving player: returning to active game at current position with existing score');
+        state.hasRevived = true;
+        rewardEarned = false;
+        isWatchingReviveAd = false;
+        clearInterval(reviveTimerInterval);
+
+        // Return to active HUD
+        showScreen(screens.gameHUD);
+
+        // Resume game at the place where it was left
+        if (window.Game) {
+            window.Game.revivePlayer();
+        }
+
+        // Preload next reward ad
+        loadRewardAd();
+    }
+
     function startReviveTimer(stats) {
+        clearInterval(reviveTimerInterval);
+        rewardEarned = false;
         let timeLeft = 5;
         const timerEl = document.getElementById('revive-timer');
         if (timerEl) timerEl.innerText = timeLeft;
@@ -475,35 +579,43 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timerEl) timerEl.innerText = timeLeft;
             if (timeLeft <= 0) {
                 clearInterval(reviveTimerInterval);
-                endGame(stats);
+                if (!isWatchingReviveAd && !state.hasRevived) {
+                    endGame(stats);
+                }
             }
         }, 1000);
     }
 
     if (buttons.watchAd) {
         buttons.watchAd.onclick = async () => {
-            clearInterval(reviveTimerInterval); // Stop timer
-            
-            if (state.adMobInstance && state.adReady) {
+            console.log('Event: Watch Ad Clicked');
+            clearInterval(reviveTimerInterval); // Stop timer countdown
+            rewardEarned = false;
+            isWatchingReviveAd = true;
+
+            if (state.adMobInstance) {
                 try {
+                    if (!state.adReady) {
+                        console.log('Ad not ready yet, preparing before show...');
+                        await loadRewardAd();
+                    }
                     const rewardItem = await state.adMobInstance.showRewardVideoAd();
-                    console.log('User watched ad, reward:', rewardItem);
-                    // Successfully watched ad, trigger revive!
-                    state.hasRevived = true;
-                    showScreen(screens.gameHUD);
-                    if (window.Game) window.Game.revivePlayer();
+                    console.log('User completed reward ad, reward:', rewardItem);
+                    rewardEarned = true;
+                    doRevive();
                 } catch (e) {
-                    console.error('Ad show failed:', e);
-                    endGame(window.Game ? window.Game.getStats() : {});
+                    console.warn('showRewardVideoAd invocation resolved/rejected:', e);
+                    // If dismissed without reward, the onRewardedVideoAdDismissed listener triggers endGame.
+                    // If ad couldn't even be shown and no reward was earned:
+                    if (!rewardEarned && isWatchingReviveAd) {
+                        isWatchingReviveAd = false;
+                        endGame(window.Game ? window.Game.getStats() : {});
+                    }
                 }
             } else {
-                console.log('Ad not ready or unavailable. Faking revive for web Dev mode.');
-                // Fallback for Web browser testing
-                setTimeout(() => {
-                    state.hasRevived = true;
-                    showScreen(screens.gameHUD);
-                    if (window.Game) window.Game.revivePlayer();
-                }, 1000);
+                console.log('AdMob unavailable (browser/dev). Fallback reviving.');
+                rewardEarned = true;
+                doRevive();
             }
         };
     }
@@ -511,6 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buttons.skipRevive) {
         buttons.skipRevive.onclick = () => {
             clearInterval(reviveTimerInterval);
+            isWatchingReviveAd = false;
             endGame(window.Game ? window.Game.getStats() : {});
         };
     }
@@ -639,6 +752,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.health = 100;
         state.isPaused = false;
         state.hasRevived = false;
+        rewardEarned = false;
+        isWatchingReviveAd = false;
         state.lastMode = mode;
         state.lastChallengeId = challengeId;
         if (buttons.pause) buttons.pause.innerText = 'pause';
@@ -746,6 +861,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Already revived once, just end it
                 endGame(stats);
             } else {
+                rewardEarned = false;
+                isWatchingReviveAd = false;
                 showScreen(screens.reviveScreen);
                 startReviveTimer(stats);
             }

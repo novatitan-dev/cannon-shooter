@@ -296,11 +296,76 @@ class GameEngine {
         this.audioCtx = null;
         this.shootBuffer = null;     // Decoded AudioBuffer for the shoot MP3
         this.shootRawBuffer = null;  // Raw ArrayBuffer fetched from shoot.mp3
+        this.hitNoiseBuffer = null;  // Pre-allocated AudioBuffer for hit sound
+        this.destroyNoiseBuffer = null; // Pre-allocated AudioBuffer for destroy sound
+        this.bombNoiseBuffer = null; // Pre-allocated AudioBuffer for bomb sound
         this.musicVolume = 0.6;      // Cannon shoot sound volume (Music slider, default 60%)
         this.masterVolume = 0.8;     // Hit/destroy sound volume (Master Volume slider, default 80%)
         this.loadShootAudio();       // Pre-fetch immediately
 
+        // HUD Elements Cache (avoids DOM lookups and layout thrashing in render loop)
+        this.hudElements = {
+            shield: null,
+            shieldTimer: null,
+            doubleFire: null,
+            doubleFireTimer: null,
+            bomb: null,
+            goalCard: null,
+            goalTitle: null,
+            goalVal: null,
+            lastShieldSec: -1,
+            lastDoubleSec: -1,
+            lastGoalText: ''
+        };
+
         this.init();
+    }
+
+    /** Pre-allocate static noise buffers once so sound effects never trigger GC */
+    _initStaticAudioBuffers() {
+        if (!this.audioCtx) return;
+        const ctx = this.audioCtx;
+
+        if (!this.hitNoiseBuffer) {
+            const size = Math.floor(ctx.sampleRate * 0.06);
+            this.hitNoiseBuffer = ctx.createBuffer(1, size, ctx.sampleRate);
+            const data = this.hitNoiseBuffer.getChannelData(0);
+            for (let i = 0; i < size; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / size, 3);
+            }
+        }
+
+        if (!this.destroyNoiseBuffer) {
+            const size = Math.floor(ctx.sampleRate * 0.22);
+            this.destroyNoiseBuffer = ctx.createBuffer(1, size, ctx.sampleRate);
+            const data = this.destroyNoiseBuffer.getChannelData(0);
+            for (let i = 0; i < size; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / size, 1.5);
+            }
+        }
+
+        if (!this.bombNoiseBuffer) {
+            const size = Math.floor(ctx.sampleRate * 0.4);
+            this.bombNoiseBuffer = ctx.createBuffer(1, size, ctx.sampleRate);
+            const data = this.bombNoiseBuffer.getChannelData(0);
+            for (let i = 0; i < size; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / size, 1.2);
+            }
+        }
+    }
+
+    /** Cache HUD DOM references once */
+    _cacheHUDElements() {
+        if (!this.hudElements.shield) {
+            this.hudElements.shield = document.getElementById('hud-buff-shield');
+            this.hudElements.shieldTimer = this.hudElements.shield ? this.hudElements.shield.querySelector('.buff-timer') : null;
+            this.hudElements.doubleFire = document.getElementById('hud-buff-doublef');
+            this.hudElements.doubleFireTimer = this.hudElements.doubleFire ? this.hudElements.doubleFire.querySelector('.buff-timer') : null;
+            this.hudElements.bomb = document.getElementById('hud-buff-bomb');
+            this.hudElements.goalCard = document.getElementById('hud-goal-card');
+            this.hudElements.goalTitle = document.getElementById('hud-goal-title');
+            this.hudElements.goalVal = document.getElementById('hud-goal-val');
+        }
     }
 
     /**
@@ -311,6 +376,7 @@ class GameEngine {
         if (!this.audioCtx) {
             // Fallback creation (shouldn't normally happen)
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            this._initStaticAudioBuffers();
         }
         // Resume if browser suspended it
         if (this.audioCtx.state === 'suspended') {
@@ -332,7 +398,9 @@ class GameEngine {
 
     /** Decode the raw buffer into an AudioBuffer once the AudioContext exists. */
     async decodeShootAudio() {
-        if (this.shootBuffer || !this.shootRawBuffer || !this.audioCtx) return;
+        if (!this.audioCtx) return;
+        this._initStaticAudioBuffers();
+        if (this.shootBuffer || !this.shootRawBuffer) return;
         try {
             // slice(0) so the original ArrayBuffer stays intact if needed again
             this.shootBuffer = await this.audioCtx.decodeAudioData(this.shootRawBuffer.slice(0));
@@ -375,22 +443,17 @@ class GameEngine {
 
     /**
      * Sharp metallic "ping/pop" when a bullet grazes a ball.
+     * ZERO GC ALLOCATIONS: Uses pre-allocated static noise buffer.
      */
     playHitSound() {
         if (!this.audioCtx) return; // Not yet initialized
         try {
             const ctx = this.getAudioCtx();
             const now = ctx.currentTime;
+            if (!this.hitNoiseBuffer) this._initStaticAudioBuffers();
 
-            // Noise burst for impact texture
-            const bufferSize = Math.floor(ctx.sampleRate * 0.06);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
-            }
             const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
+            noise.buffer = this.hitNoiseBuffer;
 
             // Band-pass filter to shape the noise into a crisp "thwack"
             const filter = ctx.createBiquadFilter();
@@ -415,12 +478,14 @@ class GameEngine {
 
     /**
      * Deep punchy "boom" when a ball is fully destroyed.
+     * ZERO GC ALLOCATIONS: Uses pre-allocated static noise buffer.
      */
     playDestroySound() {
         if (!this.audioCtx) return; // Not yet initialized
         try {
             const ctx = this.getAudioCtx();
             const now = ctx.currentTime;
+            if (!this.destroyNoiseBuffer) this._initStaticAudioBuffers();
 
             // Sub-bass thump: sine oscillator sweeping down fast
             const osc = ctx.createOscillator();
@@ -437,15 +502,9 @@ class GameEngine {
             osc.start(now);
             osc.stop(now + 0.28);
 
-            // Layered noise explosion burst
-            const bufferSize = Math.floor(ctx.sampleRate * 0.22);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 1.5);
-            }
+            // Layered noise explosion burst from pre-allocated buffer
             const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
+            noise.buffer = this.destroyNoiseBuffer;
 
             const lp = ctx.createBiquadFilter();
             lp.type = 'lowpass';
@@ -642,16 +701,17 @@ class GameEngine {
     }
 
     checkCollisions() {
-        // Bullet vs Ball
+        // Bullet vs Ball (Optimized squared distance check - avoids Math.sqrt)
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
             for (let j = this.balls.length - 1; j >= 0; j--) {
                 const ball = this.balls[j];
                 const dx = bullet.x - ball.x;
                 const dy = bullet.y - ball.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
+                const hitRadius = ball.size + bullet.radius;
 
-                if (distance < ball.size + bullet.radius) {
+                if (distSq < hitRadius * hitRadius) {
                     bullet.active = false;
                     ball.health -= 5;
                     this.totalHits++; // Increment total hits for accuracy tracking
@@ -704,14 +764,17 @@ class GameEngine {
         }
 
         // Cannon vs ShieldDrop
-        for (let shield of this.shieldDrops) {
-            const cx = this.cannon.x + this.cannon.width / 2;
-            const cy = this.cannon.y + this.cannon.height / 2;
-            const dx = cx - shield.x;
-            const dy = cy - shield.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        const cannonCenterX = this.cannon.x + this.cannon.width / 2;
+        const cannonCenterY = this.cannon.y + this.cannon.height / 2;
+        const cannonPickupRadius = this.cannon.width / 2;
 
-            if (distance < shield.radius + this.cannon.width / 2) {
+        for (let shield of this.shieldDrops) {
+            const dx = cannonCenterX - shield.x;
+            const dy = cannonCenterY - shield.y;
+            const distSq = dx * dx + dy * dy;
+            const pickupDist = shield.radius + cannonPickupRadius;
+
+            if (distSq < pickupDist * pickupDist) {
                 shield.active = false;
                 this.cannon.isShielded = true;
                 this.cannon.shieldEndTime = Date.now() + 14000; // ~14 seconds
@@ -720,13 +783,12 @@ class GameEngine {
 
         // Cannon vs DoubleFireDrop
         for (let drop of this.doubleFireDrops) {
-            const cx = this.cannon.x + this.cannon.width / 2;
-            const cy = this.cannon.y + this.cannon.height / 2;
-            const dx = cx - drop.x;
-            const dy = cy - drop.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const dx = cannonCenterX - drop.x;
+            const dy = cannonCenterY - drop.y;
+            const distSq = dx * dx + dy * dy;
+            const pickupDist = drop.radius + cannonPickupRadius;
 
-            if (distance < drop.radius + this.cannon.width / 2) {
+            if (distSq < pickupDist * pickupDist) {
                 drop.active = false;
                 this.cannon.isDoubleFire = true;
                 this.cannon.doubleFireEndTime = Date.now() + 12000; // ~12 seconds
@@ -735,24 +797,34 @@ class GameEngine {
 
         // Cannon vs BombDrop
         for (let bomb of this.bombDrops) {
-            const cx = this.cannon.x + this.cannon.width / 2;
-            const cy = this.cannon.y + this.cannon.height / 2;
-            const dx = cx - bomb.x;
-            const dy = cy - bomb.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const dx = cannonCenterX - bomb.x;
+            const dy = cannonCenterY - bomb.y;
+            const distSq = dx * dx + dy * dy;
+            const pickupDist = bomb.radius + cannonPickupRadius;
 
-            if (distance < bomb.radius + this.cannon.width / 2) {
+            if (distSq < pickupDist * pickupDist) {
                 bomb.active = false;
                 this.hasBomb = true;
             }
         }
 
-        // Cleanup
-        this.bullets = this.bullets.filter(b => b.active);
-        this.balls = this.balls.filter(b => b.active);
-        this.shieldDrops = this.shieldDrops.filter(s => s.active);
-        this.doubleFireDrops = this.doubleFireDrops.filter(d => d.active);
-        this.bombDrops = this.bombDrops.filter(b => b.active);
+        // In-place Cleanup (zero-allocation array compaction - eliminates GC pause spikes)
+        this._compactArray(this.bullets);
+        this._compactArray(this.balls);
+        this._compactArray(this.shieldDrops);
+        this._compactArray(this.doubleFireDrops);
+        this._compactArray(this.bombDrops);
+    }
+
+    /** In-place zero-allocation array compaction */
+    _compactArray(arr) {
+        let write = 0;
+        for (let read = 0; read < arr.length; read++) {
+            if (arr[read].active) {
+                arr[write++] = arr[read];
+            }
+        }
+        arr.length = write;
     }
 
     gameOver() {
@@ -825,7 +897,8 @@ class GameEngine {
 
         // Resume game loop
         this.isRunning = true;
-        this.lastUpdate = Date.now(); // Reset update timer to avoid time jump
+        this._lastFrameTime = performance.now();
+        this._smoothDt = 1.0;
     }
 
     /** Use the bomb power-up: destroy all balls on screen with a big explosion. */
@@ -878,15 +951,10 @@ class GameEngine {
             osc.start(now);
             osc.stop(now + 0.55);
 
-            // Big noise blast
-            const bufferSize = Math.floor(ctx.sampleRate * 0.4);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 1.2);
-            }
+            // Big noise blast from pre-allocated buffer
+            if (!this.bombNoiseBuffer) this._initStaticAudioBuffers();
             const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
+            noise.buffer = this.bombNoiseBuffer;
 
             const lp = ctx.createBiquadFilter();
             lp.type = 'lowpass';
@@ -938,6 +1006,8 @@ class GameEngine {
         this.cannon.isDoubleFire = false;
         this.isRunning = true;
         this.isPaused = false;
+        this._lastFrameTime = performance.now();
+        this._smoothDt = 1.0;
 
         // Custom setup per challenge mode
         if (this.gameMode === 'challenge') {
@@ -951,22 +1021,36 @@ class GameEngine {
 
     pause(paused) {
         this.isPaused = paused;
+        if (!paused) {
+            this._lastFrameTime = performance.now();
+            this._smoothDt = 1.0;
+        }
     }
 
-    loop() {
-        const now = Date.now();
-        // Delta time normalized so that dt=1.0 at 60fps (~16.67ms per frame).
-        // Capped at 3 to prevent huge jumps when app is backgrounded/tabbed out.
-        const dt = Math.min((now - (this.lastUpdate || now)) / 16.667, 3);
+    loop(timestamp) {
+        if (!this._lastFrameTime) {
+            this._lastFrameTime = timestamp || performance.now();
+        }
+        const currentFrameTime = timestamp || performance.now();
+        const elapsedMs = currentFrameTime - this._lastFrameTime;
+        this._lastFrameTime = currentFrameTime;
+
+        // Delta time normalized so that dt=1.0 at 60fps (16.667ms per frame).
+        // Capped between 0.1 and 2.5 to prevent micro-freezes or huge physics jumps
+        let dt = elapsedMs / 16.667;
+        if (isNaN(dt) || dt <= 0) dt = 1.0;
+        else if (dt > 2.5) dt = 2.5;
+
+        // Smooth delta time with rolling average to filter timer jitter on mobile WebViews
+        if (!this._smoothDt) this._smoothDt = 1.0;
+        this._smoothDt = this._smoothDt * 0.75 + dt * 0.25;
+
         if (this.isRunning && !this.isPaused) {
-            if (this.lastUpdate > 0) {
-                this.gameTimeMs += (now - this.lastUpdate);
-            }
-            this.update(dt);
+            this.gameTimeMs += elapsedMs;
+            this.update(this._smoothDt);
             this.draw();
         }
-        this.lastUpdate = now;
-        requestAnimationFrame(() => this.loop());
+        requestAnimationFrame((t) => this.loop(t));
     }
 
     update(dt) {
@@ -1037,20 +1121,25 @@ class GameEngine {
             }
         }
 
-        // Update explosion particles
-        this.bombExplosionParticles = this.bombExplosionParticles.filter(p => {
+        // Update explosion particles (in-place compaction - zero GC allocation)
+        let particleWrite = 0;
+        for (let i = 0; i < this.bombExplosionParticles.length; i++) {
+            const p = this.bombExplosionParticles[i];
             p.x += p.vx * dt;
             p.y += p.vy * dt;
             p.life -= 0.03 * dt;
             p.radius *= Math.pow(0.97, dt);
-            return p.life > 0;
-        });
+            if (p.life > 0) {
+                this.bombExplosionParticles[particleWrite++] = p;
+            }
+        }
+        this.bombExplosionParticles.length = particleWrite;
 
-        this.bullets.forEach(b => b.update(dt));
-        this.balls.forEach(b => b.update(dt));
-        this.shieldDrops.forEach(s => s.update(dt));
-        this.doubleFireDrops.forEach(d => d.update(dt));
-        this.bombDrops.forEach(b => b.update(dt));
+        for (let i = 0; i < this.bullets.length; i++) this.bullets[i].update(dt);
+        for (let i = 0; i < this.balls.length; i++) this.balls[i].update(dt);
+        for (let i = 0; i < this.shieldDrops.length; i++) this.shieldDrops[i].update(dt);
+        for (let i = 0; i < this.doubleFireDrops.length; i++) this.doubleFireDrops[i].update(dt);
+        for (let i = 0; i < this.bombDrops.length; i++) this.bombDrops[i].update(dt);
         
         this.spawnBall();
         this.checkCollisions();
@@ -1149,48 +1238,85 @@ class GameEngine {
         this.ctx.globalAlpha = 1;
     }
 
-    /** Push active power-up state to the HUD element each frame. */
+    /** Push active power-up state to the HUD element each frame without DOM layout thrashing */
     _syncBuffHUD() {
-        const shieldEl = document.getElementById('hud-buff-shield');
-        const dfEl     = document.getElementById('hud-buff-doublef');
-        const bombEl   = document.getElementById('hud-buff-bomb');
-        if (shieldEl) shieldEl.style.display = this.cannon.isShielded  ? 'flex' : 'none';
-        if (dfEl)     dfEl.style.display     = this.cannon.isDoubleFire ? 'flex' : 'none';
-        if (bombEl)   bombEl.style.display   = this.hasBomb ? 'flex' : 'none';
+        this._cacheHUDElements();
+        const hud = this.hudElements;
 
-        // Timer countdowns
-        if (shieldEl && this.cannon.isShielded) {
-            const secs = Math.max(0, Math.ceil((this.cannon.shieldEndTime - Date.now()) / 1000));
-            const t = shieldEl.querySelector('.buff-timer');
-            if (t) t.textContent = secs + 's';
+        // Only toggle display if state changed
+        const shieldActive = this.cannon.isShielded;
+        if (hud.shield) {
+            const desired = shieldActive ? 'flex' : 'none';
+            if (hud.shield.style.display !== desired) hud.shield.style.display = desired;
         }
-        if (dfEl && this.cannon.isDoubleFire) {
+
+        const dfActive = this.cannon.isDoubleFire;
+        if (hud.doubleFire) {
+            const desired = dfActive ? 'flex' : 'none';
+            if (hud.doubleFire.style.display !== desired) hud.doubleFire.style.display = desired;
+        }
+
+        const bombActive = this.hasBomb;
+        if (hud.bomb) {
+            const desired = bombActive ? 'flex' : 'none';
+            if (hud.bomb.style.display !== desired) hud.bomb.style.display = desired;
+        }
+
+        // Timer countdowns - update text ONLY when second changes (not 60x/sec)
+        if (hud.shieldTimer && shieldActive) {
+            const secs = Math.max(0, Math.ceil((this.cannon.shieldEndTime - Date.now()) / 1000));
+            if (secs !== hud.lastShieldSec) {
+                hud.lastShieldSec = secs;
+                hud.shieldTimer.textContent = secs + 's';
+            }
+        } else {
+            hud.lastShieldSec = -1;
+        }
+
+        if (hud.doubleFireTimer && dfActive) {
             const secs = Math.max(0, Math.ceil((this.cannon.doubleFireEndTime - Date.now()) / 1000));
-            const t = dfEl.querySelector('.buff-timer');
-            if (t) t.textContent = secs + 's';
+            if (secs !== hud.lastDoubleSec) {
+                hud.lastDoubleSec = secs;
+                hud.doubleFireTimer.textContent = secs + 's';
+            }
+        } else {
+            hud.lastDoubleSec = -1;
         }
     }
 
     _syncGoalHUD() {
-        const goalCard = document.getElementById('hud-goal-card');
-        if (!goalCard) return;
+        this._cacheHUDElements();
+        const hud = this.hudElements;
+        if (!hud.goalCard) return;
 
         if (this.gameMode === 'challenge') {
-            goalCard.classList.remove('hidden');
-            const titleEl = document.getElementById('hud-goal-title');
-            const valEl = document.getElementById('hud-goal-val');
+            if (hud.goalCard.classList.contains('hidden')) {
+                hud.goalCard.classList.remove('hidden');
+            }
 
             if (this.activeChallengeId === 'time_attack') {
-                if (titleEl) titleEl.textContent = 'BLITZ TARGET';
+                if (hud.goalTitle && hud.goalTitle.textContent !== 'BLITZ TARGET') {
+                    hud.goalTitle.textContent = 'BLITZ TARGET';
+                }
                 const remaining = Math.max(0, this.challengeTarget - this.challengeProgress);
-                if (valEl) valEl.textContent = `${remaining} LEFT`;
+                const text = `${remaining} LEFT`;
+                if (hud.goalVal && hud.lastGoalText !== text) {
+                    hud.lastGoalText = text;
+                    hud.goalVal.textContent = text;
+                }
             } else if (this.activeChallengeId === 'iron_dome') {
-                if (titleEl) titleEl.textContent = 'DEFEND TIME';
+                if (hud.goalTitle && hud.goalTitle.textContent !== 'DEFEND TIME') {
+                    hud.goalTitle.textContent = 'DEFEND TIME';
+                }
                 const remaining = Math.max(0, this.challengeTarget - this.challengeProgress);
-                if (valEl) valEl.textContent = `${remaining.toFixed(1)}s`;
+                const text = `${remaining.toFixed(1)}s`;
+                if (hud.goalVal && hud.lastGoalText !== text) {
+                    hud.lastGoalText = text;
+                    hud.goalVal.textContent = text;
+                }
             }
-        } else {
-            goalCard.classList.add('hidden');
+        } else if (!hud.goalCard.classList.contains('hidden')) {
+            hud.goalCard.classList.add('hidden');
         }
     }
 }

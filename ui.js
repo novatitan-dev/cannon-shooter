@@ -98,14 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         buttons.bgDaylight.onclick = () => {
-            bgLayerImg.src = 'game_bg.png?v=2';
+            if (bgLayerImg) bgLayerImg.src = 'game_bg.png?v=2';
+            if (window.Game && window.Game.setBackgroundView) window.Game.setBackgroundView('daylight');
             localStorage.setItem('cannon_bg_view', 'daylight');
             buttons.bgDaylight.className = 'py-3 px-4 rounded-xl border border-primary text-primary font-bold text-sm bg-primary/10 transition-colors';
             buttons.bgDark.className = 'py-3 px-4 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm hover:bg-surface-container-highest transition-colors';
         };
 
         buttons.bgDark.onclick = () => {
-            bgLayerImg.src = 'game_bg_dark.jpg';
+            if (bgLayerImg) bgLayerImg.src = 'game_bg_dark.jpg';
+            if (window.Game && window.Game.setBackgroundView) window.Game.setBackgroundView('dark');
             localStorage.setItem('cannon_bg_view', 'dark');
             buttons.bgDark.className = 'py-3 px-4 rounded-xl border border-primary text-primary font-bold text-sm bg-primary/10 transition-colors';
             buttons.bgDaylight.className = 'py-3 px-4 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-sm hover:bg-surface-container-highest transition-colors';

@@ -19,7 +19,7 @@ class Bullet {
 
     draw(ctx) {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(Math.round(this.x), Math.round(this.y), this.radius, 0, Math.PI * 2);
         ctx.fillStyle = '#0070ea';
         ctx.fill();
         ctx.closePath();
@@ -70,8 +70,11 @@ class Ball {
     }
 
     draw(ctx) {
+        const rx = Math.round(this.x);
+        const ry = Math.round(this.y);
+        const rSize = Math.round(this.size);
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(rx, ry, rSize, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
         ctx.strokeStyle = 'white';
@@ -81,9 +84,9 @@ class Ball {
 
         // Draw health percentage
         ctx.fillStyle = 'white';
-        ctx.font = `${this.size * 0.6}px sans-serif`;
+        ctx.font = `bold ${Math.round(rSize * 0.6)}px sans-serif`;
         ctx.textAlign = 'center';
-        ctx.fillText(Math.ceil(this.health), this.x, this.y + (this.size * 0.2));
+        ctx.fillText(Math.ceil(this.health), rx, ry + Math.round(rSize * 0.22));
     }
 }
 
@@ -248,8 +251,14 @@ class GameEngine {
 
         this.bullets = [];
         this.balls = [];
+        this.lastBallSpawnTime = 0;
         this.score = 0;
         this.isRunning = false;
+
+        // Solid canvas background image — completely prevents transparent canvas flickering in Android WebView
+        this.bgImage = new Image();
+        const savedBg = typeof localStorage !== 'undefined' ? (localStorage.getItem('cannon_bg_view') || 'daylight') : 'daylight';
+        this.bgImage.src = savedBg === 'dark' ? 'game_bg_dark.jpg' : 'game_bg.png?v=2';
         this.isPaused = false;
         this.lastFireTime = 0;
         this.fireRate = 150; // ms
@@ -554,7 +563,13 @@ class GameEngine {
         this.loop();
     }
 
+    setBackgroundView(viewName) {
+        if (!this.bgImage) this.bgImage = new Image();
+        this.bgImage.src = viewName === 'dark' ? 'game_bg_dark.jpg' : 'game_bg.png?v=2';
+    }
+
     resize() {
+        if (!this.canvas || !this.canvas.parentElement) return;
         const rect = this.canvas.parentElement.getBoundingClientRect();
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
@@ -568,9 +583,12 @@ class GameEngine {
         this.cannon.width = cannonSize;
         this.cannon.height = cannonSize;
 
-        this.cannon.x = this.canvas.width / 2 - this.cannon.width / 2;
-        this.cannon.y = this.canvas.height - this.cannon.height - 20;
-        this.cannon.targetX = this.cannon.x;
+        // Position cannon: center initially or clamp within bounds
+        if (!this.cannon.x || this.cannon.x < 0 || this.cannon.x > this.canvas.width) {
+            this.cannon.x = Math.round(this.canvas.width / 2 - this.cannon.width / 2);
+            this.cannon.targetX = this.cannon.x;
+        }
+        this.cannon.y = Math.round(this.canvas.height - this.cannon.height - 20);
     }
 
     handlePointerDown(e) {
@@ -655,38 +673,52 @@ class GameEngine {
         }
     }
 
+    _createBall(progress) {
+        if (!this.canvas || !this.canvas.width) return;
+        const p = Math.max(0, Math.min(1, progress || 0));
+        const baseSize = 25 + (p * 15);
+        const size = baseSize + Math.random() * 25;
+        const healthMultiplier = 1 + (p * 2);
+        const health = Math.max(3, Math.floor((size / 5) * healthMultiplier));
+
+        const minX = size + 10;
+        const maxX = Math.max(minX + 20, this.canvas.width - size - 10);
+        const xPos = minX + Math.random() * (maxX - minX);
+        const vx = (Math.random() - 0.5) * (3.5 + p * 3.5);
+
+        this.balls.push(new Ball(this.canvas, xPos, -size - 10, size, health, vx));
+        this.lastBallSpawnTime = Date.now();
+    }
+
     spawnBall() {
-
-
+        const now = Date.now();
         const elapsed = this.gameTimeMs / 1000;
         const progress = Math.min(elapsed / 180, 1);
-        
-        let spawnThreshold;
+
+        let maxBalls = 4;
+        let spawnInterval = 2400; // ms
+
         if (this.gameMode === 'challenge' && this.activeChallengeId === 'iron_dome') {
-            // High spawn rate for Iron Dome challenge
-            spawnThreshold = 0.990 - (progress * 0.015);
+            maxBalls = Math.min(8, 4 + Math.floor(progress * 4));
+            spawnInterval = Math.max(800, 1600 - Math.floor(progress * 800));
         } else if (this.gameMode === 'challenge') {
-            // Slightly faster spawns for other challenges
-            spawnThreshold = 0.994 - (progress * 0.012);
+            maxBalls = 5;
+            spawnInterval = Math.max(1200, 2000 - Math.floor(progress * 600));
         } else {
-            // Classic mode progressive spawn rate
-            spawnThreshold = 0.997 - (progress * 0.012); 
+            // Classic mode: 3 to 6 balls max
+            maxBalls = Math.min(6, 3 + Math.floor(progress * 3));
+            spawnInterval = Math.max(1400, 2400 - Math.floor(progress * 1000));
         }
 
-        if (Math.random() > spawnThreshold) {
-            // Difficulty scaling for size and health
-            const baseSize = 25 + (progress * 15); // Starts smaller (25), grows to 40
-            const size = baseSize + Math.random() * 30;
-            
-            // Health scales with progress: 3x-10x size initially, then more
-            const healthMultiplier = 1 + (progress * 2); 
-            const health = Math.floor((size / 5) * healthMultiplier);
-            
-            const xPos = Math.random() * this.canvas.width;
-            // Add horizontal velocity for bounce-around effect
-            const vx = (Math.random() - 0.5) * (4 + progress * 4); 
-            
-            this.balls.push(new Ball(this.canvas, xPos, -size, size, health, vx));
+        // Rule 1: Never leave the player staring at an empty sky
+        if (this.balls.length === 0) {
+            this._createBall(progress);
+            return;
+        }
+
+        // Rule 2: If under max balls and interval has passed, spawn next ball
+        if (this.balls.length < maxBalls && (now - this.lastBallSpawnTime >= spawnInterval)) {
+            this._createBall(progress);
         }
     }
 
@@ -1019,6 +1051,7 @@ class GameEngine {
         this.cannon.isDoubleFire = false;
         this.isRunning = true;
         this.isPaused = false;
+        this.lastBallSpawnTime = Date.now();
         this._lastFrameTime = performance.now();
         this._smoothDt = 1.0;
 
@@ -1030,6 +1063,9 @@ class GameEngine {
                 this.challengeTarget = 60; // 60 seconds
             }
         }
+
+        // Spawn opening ball immediately so action begins without delay
+        this._createBall(0);
     }
 
     pause(paused) {
@@ -1175,23 +1211,34 @@ class GameEngine {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Draw Cannon
-        if (this.cannonSprite.complete) {
-            this.ctx.drawImage(this.cannonSprite, this.cannon.x, this.cannon.y, this.cannon.width, this.cannon.height);
+        // 1. Draw solid background directly onto canvas - eliminates transparent WebView compositor tearing
+        if (this.bgImage && this.bgImage.complete && this.bgImage.naturalWidth !== 0) {
+            this.ctx.drawImage(this.bgImage, 0, 0, this.canvas.width, this.canvas.height);
         } else {
-            this.ctx.fillStyle = '#0059bb';
-            this.ctx.fillRect(this.cannon.x, this.cannon.y, this.cannon.width, this.cannon.height);
+            this.ctx.fillStyle = '#0f172a';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
-        // Draw Shield effect
+        // 2. Draw Cannon with integer pixel snapping to eliminate subpixel shimmering
+        const drawX = Math.round(this.cannon.x);
+        const drawY = Math.round(this.cannon.y);
+        const drawW = Math.round(this.cannon.width);
+        const drawH = Math.round(this.cannon.height);
+
+        if (this.cannonSprite && this.cannonSprite.complete && this.cannonSprite.naturalWidth !== 0) {
+            this.ctx.drawImage(this.cannonSprite, drawX, drawY, drawW, drawH);
+        } else {
+            this.ctx.fillStyle = '#0059bb';
+            this.ctx.fillRect(drawX, drawY, drawW, drawH);
+        }
+
+        // 3. Draw Shield effect
         if (this.cannon.isShielded) {
+            const cx = Math.round(drawX + drawW / 2);
+            const cy = Math.round(drawY + drawH / 2);
             this.ctx.beginPath();
-            const cx = this.cannon.x + this.cannon.width / 2;
-            const cy = this.cannon.y + this.cannon.height / 2;
-            this.ctx.arc(cx, cy, this.cannon.width * 0.75, 0, Math.PI * 2);
-            this.ctx.fillStyle = 'rgba(0, 150, 255, 0.2)';
+            this.ctx.arc(cx, cy, Math.round(drawW * 0.72), 0, Math.PI * 2);
+            this.ctx.fillStyle = 'rgba(0, 150, 255, 0.18)';
             this.ctx.fill();
             this.ctx.strokeStyle = '#00ffff';
             this.ctx.lineWidth = 3;
@@ -1199,27 +1246,24 @@ class GameEngine {
             this.ctx.closePath();
         }
 
-        // Draw Double Fire effect
+        // 4. Draw Double Fire effect
         if (this.cannon.isDoubleFire) {
-            const cx = this.cannon.x + this.cannon.width / 2;
-            const cy = this.cannon.y + this.cannon.height / 2;
+            const cx = Math.round(drawX + drawW / 2);
+            const cy = Math.round(drawY + drawH / 2);
 
-            // Outer pulsing glow ring
             this.ctx.beginPath();
-            this.ctx.arc(cx, cy, this.cannon.width * 0.82, 0, Math.PI * 2);
-            this.ctx.fillStyle = 'rgba(255, 160, 0, 0.15)';
+            this.ctx.arc(cx, cy, Math.round(drawW * 0.80), 0, Math.PI * 2);
+            this.ctx.fillStyle = 'rgba(255, 160, 0, 0.12)';
             this.ctx.fill();
-            this.ctx.strokeStyle = '#ffcc00';
+            this.ctx.strokeStyle = '#ffbb00';
             this.ctx.lineWidth = 3;
-            this.ctx.setLineDash([6, 4]);
             this.ctx.stroke();
-            this.ctx.setLineDash([]);
             this.ctx.closePath();
 
             // Dual barrel markers — two yellow dots showing where bullets come from
             [0.25, 0.75].forEach(frac => {
                 this.ctx.beginPath();
-                this.ctx.arc(this.cannon.x + this.cannon.width * frac, this.cannon.y + 6, 5, 0, Math.PI * 2);
+                this.ctx.arc(Math.round(drawX + drawW * frac), Math.round(drawY + 6), 4, 0, Math.PI * 2);
                 this.ctx.fillStyle = '#ffdd00';
                 this.ctx.fill();
                 this.ctx.strokeStyle = '#ff8800';

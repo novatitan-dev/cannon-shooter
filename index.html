@@ -418,12 +418,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(8, 14, 28, 0.75);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background: rgba(6, 11, 22, 0.85);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             padding: 1rem;
             overflow-y: auto;
         }
@@ -432,19 +430,17 @@
             pointer-events: auto;
         }
         .game-modal-card {
-            background: rgba(13, 20, 36, 0.94);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: #0d1424;
             border: 1px solid rgba(117, 231, 254, 0.22);
             border-radius: 1.5rem;
             width: 100%;
             max-width: 660px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 89, 187, 0.25);
-            transform: scale(0.92) translateY(16px);
+            box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.8), 0 0 32px rgba(0, 89, 187, 0.2);
+            transform: scale(0.95) translateY(12px) translateZ(0);
             opacity: 0;
-            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
             display: flex;
             flex-direction: column;
         }
@@ -694,7 +690,7 @@
             animation: floatParticle var(--duration, 6s) ease-in-out infinite var(--delay, 0s);
         }
 
-        /* ---- Mission Card Base (Glassmorphism) ---- */
+        /* ---- Mission Card Base (High-Performance Hardware Accelerated) ---- */
         .mission-card {
             position: relative;
             border-radius: 1.25rem;
@@ -702,13 +698,14 @@
             display: flex;
             flex-direction: column;
             gap: 0.65rem;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             overflow: hidden;
-            background: rgba(15, 23, 42, 0.55);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        .mission-card > * {
+            position: relative;
+            z-index: 2;
         }
         @media (max-width: 640px) {
             .mission-card {
@@ -725,58 +722,31 @@
                 font-size: 12px !important;
             }
         }
-        .mission-card:nth-child(1) { animation-delay: 0.1s; }
-        .mission-card:nth-child(2) { animation-delay: 0.2s; }
-
-        .mission-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 1.5rem;
-            padding: 2px;
-            opacity: 0.35;
-            transition: opacity 0.3s ease;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .mission-card:hover::before { opacity: 1; }
         .mission-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: translateY(-4px) translateZ(0);
         }
-        .mission-card:hover .mission-icon { transform: rotate(8deg) scale(1.1); }
+        .mission-card:hover .mission-icon { transform: rotate(6deg) scale(1.08); }
         .mission-card:hover .mission-btn { filter: brightness(1.1); }
 
         /* ---- Per-Card Themes ---- */
         .mission-card-time-attack {
-            background: linear-gradient(150deg, rgba(15, 23, 42, 0.6) 0%, rgba(14, 116, 144, 0.15) 50%, rgba(30, 58, 138, 0.2) 100%);
-            animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both, pulseGlowBlue 5s ease-in-out infinite;
-            animation-delay: 0.1s, 0s;
-        }
-        .mission-card-time-attack::before {
-            background: linear-gradient(135deg, #0070ea, #38bdf8, #0284c7, #60a5fa, #0070ea);
-            background-size: 300% 300%;
-            animation: borderGradientRotate 4s ease infinite;
+            background: linear-gradient(150deg, rgba(15, 23, 42, 0.92) 0%, rgba(14, 116, 144, 0.25) 50%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.12);
         }
         .mission-card-time-attack:hover {
-            box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5), 0 0 50px rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.7);
+            box-shadow: 0 18px 48px -10px rgba(0, 0, 0, 0.7), 0 0 32px rgba(56, 189, 248, 0.25);
         }
 
         .mission-card-iron-dome {
-            background: linear-gradient(150deg, rgba(15, 23, 42, 0.6) 0%, rgba(51, 65, 85, 0.2) 50%, rgba(71, 85, 105, 0.25) 100%);
-            animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both, pulseGlowGray 5s ease-in-out infinite;
-            animation-delay: 0.2s, 0s;
-        }
-        .mission-card-iron-dome::before {
-            background: linear-gradient(135deg, #64748b, #cbd5e1, #94a3b8, #e2e8f0, #64748b);
-            background-size: 300% 300%;
-            animation: borderGradientRotate 4s ease infinite;
+            background: linear-gradient(150deg, rgba(15, 23, 42, 0.92) 0%, rgba(51, 65, 85, 0.28) 50%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(148, 163, 184, 0.35);
+            box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(148, 163, 184, 0.1);
         }
         .mission-card-iron-dome:hover {
-            box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5), 0 0 50px rgba(148, 163, 184, 0.12);
+            border-color: rgba(148, 163, 184, 0.6);
+            box-shadow: 0 18px 48px -10px rgba(0, 0, 0, 0.7), 0 0 32px rgba(148, 163, 184, 0.2);
         }
 
 
@@ -801,7 +771,6 @@
             color: #fbbf24;
             text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
             transition: transform 0.2s ease;
-            animation: starGlow 2.5s ease-in-out infinite;
             font-size: 18px;
         }
         .star-filled:hover { transform: scale(1.4); }
@@ -1070,7 +1039,7 @@
                         <button id="challenge-back-btn" class="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-white/10 text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer" title="Back to Modes">
                             <span class="material-symbols-outlined text-lg sm:text-xl">arrow_back</span>
                         </button>
-                        <span class="font-headline text-base sm:text-lg md:text-xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400">Challenge Operations</span>
+                        <span class="font-headline text-base sm:text-lg md:text-xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400" style="display:inline-block; transform: translateZ(0);">Challenge Operations</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="challenge-progress" class="text-[10px] sm:text-xs font-bold text-slate-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">0 / 2 Missions</span>

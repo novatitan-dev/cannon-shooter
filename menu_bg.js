@@ -318,8 +318,26 @@
         ctx.fillRect(0, 0, W, H);
     }
 
+    function isPopupOpen() {
+        const mode = document.getElementById('mode-selection');
+        const challenge = document.getElementById('challenge-selection');
+        const profile = document.getElementById('profile-overlay');
+        const htp = document.getElementById('htp-overlay');
+        const consent = document.getElementById('consent-overlay');
+        return (mode && mode.classList.contains('active')) ||
+               (challenge && challenge.classList.contains('active')) ||
+               (profile && profile.classList.contains('active')) ||
+               (htp && htp.classList.contains('active')) ||
+               (consent && consent.classList.contains('active'));
+    }
+
     /* ── MAIN LOOP ──────────────────────────────────────── */
     function frame(t) {
+        if (isPopupOpen()) {
+            animId = requestAnimationFrame(frame);
+            return;
+        }
+
         ctx.clearRect(0, 0, W, H);
 
         // 1 – sky

@@ -169,15 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 state.adMobInstance.addListener('onRewardedVideoAdDismissed', () => {
-                    console.log('Reward Ad Dismissed. rewardEarned:', rewardEarned, 'isWatchingReviveAd:', isWatchingReviveAd);
-                    if (isWatchingReviveAd) {
-                        isWatchingReviveAd = false;
-                        if (rewardEarned) {
-                            doRevive();
-                        } else {
-                            console.log('Ad dismissed without completion -> Game Over');
-                            endGame(window.Game ? window.Game.getStats() : {});
-                        }
+                    console.log('Reward Ad Dismissed. isWatchingReviveAd:', isWatchingReviveAd, 'hasRevived:', state.hasRevived);
+                    // When the player watched the revive ad and dismissed it, always revive them back into gameplay
+                    if (isWatchingReviveAd && !state.hasRevived) {
+                        doRevive();
                     }
                     // Preload next reward video ad
                     loadRewardAd();
@@ -185,18 +180,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 state.adMobInstance.addListener('onRewardedVideoAdFailedToShow', (err) => {
                     console.warn('Reward Ad Failed to Show:', err);
-                    if (isWatchingReviveAd) {
-                        isWatchingReviveAd = false;
-                        endGame(window.Game ? window.Game.getStats() : {});
+                    if (isWatchingReviveAd && !state.hasRevived) {
+                        console.log('Ad failed to show, providing fallback revive');
+                        doRevive();
                     }
                 });
 
                 // Load initial reward ad
                 loadRewardAd();
 
-                // Show banner only if player is currently on the main menu screen
+                // Show banner if player is currently on main menu or game over / end screen
                 const mainMenu = screens.mainMenu || document.getElementById('main-menu');
-                if (mainMenu && !mainMenu.classList.contains('hidden')) {
+                const gameOver = screens.gameOverScreen || document.getElementById('game-over-screen');
+                if ((mainMenu && !mainMenu.classList.contains('hidden')) || (gameOver && !gameOver.classList.contains('hidden'))) {
                     showBannerAd();
                 }
             }
@@ -307,8 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Banner Ad Policy: Only show on main home screen, hide on all other screens (gameplay, revive, game over)
-        if (targetScreen === screens.mainMenu) {
+        // Banner Ad Policy: Show on main home screen AND end screen (gameOverScreen), hide during active gameplay & revive screen
+        if (targetScreen === screens.mainMenu || targetScreen === screens.gameOverScreen) {
             showBannerAd();
         } else {
             hideBannerAd();
@@ -553,7 +549,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.hasRevived) return; // Prevent duplicate revive triggers
         console.log('Reviving player: returning to active game at current position with existing score');
         state.hasRevived = true;
-        rewardEarned = false;
         isWatchingReviveAd = false;
         clearInterval(reviveTimerInterval);
 
@@ -571,7 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startReviveTimer(stats) {
         clearInterval(reviveTimerInterval);
-        rewardEarned = false;
+        state.hasRevived = false;
+        isWatchingReviveAd = false;
         let timeLeft = 5;
         const timerEl = document.getElementById('revive-timer');
         if (timerEl) timerEl.innerText = timeLeft;
@@ -592,7 +588,6 @@ document.addEventListener('DOMContentLoaded', () => {
         buttons.watchAd.onclick = async () => {
             console.log('Event: Watch Ad Clicked');
             clearInterval(reviveTimerInterval); // Stop timer countdown
-            rewardEarned = false;
             isWatchingReviveAd = true;
 
             if (state.adMobInstance) {
@@ -601,22 +596,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log('Ad not ready yet, preparing before show...');
                         await loadRewardAd();
                     }
-                    const rewardItem = await state.adMobInstance.showRewardVideoAd();
-                    console.log('User completed reward ad, reward:', rewardItem);
-                    rewardEarned = true;
+                    await state.adMobInstance.showRewardVideoAd();
+                    console.log('User completed reward ad');
                     doRevive();
                 } catch (e) {
-                    console.warn('showRewardVideoAd invocation resolved/rejected:', e);
-                    // If dismissed without reward, the onRewardedVideoAdDismissed listener triggers endGame.
-                    // If ad couldn't even be shown and no reward was earned:
-                    if (!rewardEarned && isWatchingReviveAd) {
-                        isWatchingReviveAd = false;
-                        endGame(window.Game ? window.Game.getStats() : {});
+                    console.warn('showRewardVideoAd resolved/rejected:', e);
+                    // In Capacitor AdMob, showRewardVideoAd may reject upon activity dismiss.
+                    // If the user opted to watch the revive ad, ensure they return to gameplay:
+                    if (isWatchingReviveAd && !state.hasRevived) {
+                        doRevive();
                     }
                 }
             } else {
                 console.log('AdMob unavailable (browser/dev). Fallback reviving.');
-                rewardEarned = true;
                 doRevive();
             }
         };

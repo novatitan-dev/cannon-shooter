@@ -781,10 +781,10 @@ class GameEngine {
             // Use full ball radius for visual touch
             if (distanceSquared < (ball.size * ball.size)) {
                 if (this.cannon.isShielded) {
-                    // Shield active - Explode the ball!
+                    // Shield active - Explode and vaporize the ball!
                     this.score += ball.maxHealth;
                     this.hits++;
-                    this.splitBall(ball);
+                    this.createExplosion(ball.x, ball.y, ball.color, 16);
                     ball.active = false;
                     if (window.GodotBridge) window.GodotBridge.updateScore(this.score);
                     this.playDestroySound();
@@ -919,8 +919,8 @@ class GameEngine {
     }
 
     revivePlayer() {
-        // Clear balls near the cannon center to prevent instant collision upon respawn
-        const safeRadius = 350;
+        // Clear balls near the cannon to guarantee safe respawn
+        const safeRadius = 450;
         const cannonCenterX = this.cannon.x + this.cannon.width / 2;
         const cannonCenterY = this.cannon.y + this.cannon.height / 2;
         this.balls = this.balls.filter(ball => {
@@ -929,16 +929,31 @@ class GameEngine {
             return Math.sqrt(dx * dx + dy * dy) > safeRadius;
         });
 
-        // Grant 3-second invulnerability shield so any falling balls explode safely
-        this.cannon.isShielded = true;
-        this.cannon.shieldEndTime = Date.now() + 3000;
+        // Push any remaining balls that are too close to the bottom upward
+        for (const ball of this.balls) {
+            if (ball.y > this.canvas.height - 400) {
+                ball.y = Math.max(80, this.canvas.height - 550);
+                ball.vy = -Math.abs(ball.vy || 2);
+            }
+        }
 
-        // Reset input and frame timers so physics resumes smoothly without time jumps
+        // Grant 5-second invulnerability shield so any falling balls vaporize safely
+        this.cannon.isShielded = true;
+        this.cannon.shieldEndTime = Date.now() + 5000;
+
+        // Reset input, cannon targets, and frame timers so physics resumes smoothly at current score & position
+        this.cannon.targetX = this.cannon.x;
         this.isFiring = false;
         this.isRunning = true;
         this.isPaused = false;
         this._lastFrameTime = performance.now();
         this._smoothDt = 1.0;
+        this.lastBallSpawnTime = Date.now();
+
+        // Ensure score on HUD matches current game score
+        if (window.GodotBridge) {
+            window.GodotBridge.updateScore(this.score);
+        }
 
         // Resume audio context if suspended while viewing the ad
         if (this.audioCtx && this.audioCtx.state === 'suspended') {
